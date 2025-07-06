@@ -29,7 +29,7 @@
         "*://*.amazon.ca/*/dp/*",
         "*://*.amazon.ca/gp/product/*"
       ],
-      "js": ["React/react.js", "React/react-dom.js", "Components/CypherBrandDecoderComponent.js", "PageParsers/typicalProductPageParser.js", "PageParsers/bookPageParser.js", "networkManager.js", "CypherDisplayElementManager.js", "content.js"],
+      "js": ["React/react.js", "React/react-dom.js", "Components/CypherBrandDecoderComponent.js",  "Components/CompassAIComponent.js", "PageParsers/typicalProductPageParser.js", "PageParsers/bookPageParser.js", "networkManager.js", "CypherDisplayElementManager.js", "content.js"],
       "css": ["styles.css"],
       "run_at": "document_idle"
     }
@@ -41,7 +41,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["icons/*", "PageParsers/*", "React/*"],
+      "resources": ["Components/tilt-ai-styles.css", "icons/*", "PageParsers/*", "React/*"],
       "matches": ["<all_urls>"]
     }
   ],

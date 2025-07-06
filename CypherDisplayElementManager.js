@@ -50,6 +50,7 @@ class  CypherDisplayElementManager {
 
         // return message, icon
         return {
+            company: brandInfo,
             message: message,
             icon: icon,
         }
@@ -80,16 +81,54 @@ class  CypherDisplayElementManager {
         // Create a wrapper DOM element
         const wrapperDiv = document.createElement('div');
         wrapperDiv.className = 'brand-owner-info'; // Add your base class here
-        // Make sure window.DisplayElement exists and is the right component
-        console.log('window.DisplayElement:', window.DisplayElement); // Debug line
+        // Make sure window.CypherDisplayElement exists and is the right component
+        console.log('window.CypherDisplayElement:', window.CypherDisplayElement); // Debug line
         // Create the React element
-        const component = React.createElement(window.DisplayElement, { icon, message });
+        const component = React.createElement(window.CypherDisplayElement, { icon, message });
         // Render the React component into the wrapper
         ReactDOM.render(component, wrapperDiv);
         console.log('React component rendered into wrapper:', wrapperDiv);
         console.log('Wrapper has children:', wrapperDiv.children.length);
         
         return wrapperDiv; // Return the DOM element, not the React element
+    }
+
+    createDisplayElementWithComponentCompass(brandInfo, ownerInfo = null, isLoading = false) {
+        // Extract company name from the brandInfo object
+        let companyName = 'Loading...';
+        
+        if (!isLoading) {
+            const {company, message, icon} = this.createMessageAndIcon(brandInfo, ownerInfo, isLoading);
+            companyName = company; // Assuming createMessageAndIcon returns a string for company
+        }
+
+        // Create a wrapper DOM element
+        const wrapperDiv = document.createElement('div');
+        wrapperDiv.className = 'brand-owner-info-container';
+        
+        // Check if window.CompassAIComponent exists
+        console.log('window.CompassAIComponent:', window.CompassAIComponent);
+        
+        if (!window.CompassAIComponent) {
+            console.error('CompassAIComponent is not loaded! Make sure CompassAIComponent.js is included in your manifest.');
+            wrapperDiv.innerHTML = '<div>Error: CompassAIComponent not loaded</div>';
+            return wrapperDiv;
+        }
+        
+        console.log('Creating component with companyName:', companyName); // Debug line
+        
+        // Create the React element
+        const component = React.createElement(window.CompassAIComponent, { 
+            companyName: companyName,  // Make sure this is always a string
+            isLoading: isLoading 
+        });
+        
+        // Render the React component into the wrapper
+        ReactDOM.render(component, wrapperDiv);
+        console.log('React component rendered into wrapper:', wrapperDiv);
+        console.log('Wrapper has children:', wrapperDiv.children.length);
+        
+        return wrapperDiv;
     }
 
     updateDisplayElement(brandInfo, ownerInfo) {
@@ -123,7 +162,7 @@ class  CypherDisplayElementManager {
         }
         
         // Re-render the React component with new props
-        const component = React.createElement(window.DisplayElement, { 
+        const component = React.createElement(window.CypherDisplayElement, { 
             icon, 
             message, 
             isLoading: false // No longer loading
@@ -135,21 +174,53 @@ class  CypherDisplayElementManager {
         this.displayElement.classList.remove('loading');
     }
 
-    insertDisplayElement(element) {
-        console.log('Inserting element with layout mode:', this.layoutMode);
-        
-        // Fallback to original logic
-        if (this.layoutMode === 'product-details') {
-            // First try to insert under price (works for most product pages)
-            if (this.insertUnderPrice(element)) {
-                this.displayElement = element;
-                return;
-            }
-            this.insertInProductDetailsArea(element);
-        } else {
-            this.insertInBuyBox(element);
+    updateDisplayElementCompass(brandInfo, ownerInfo) {
+        if (!this.displayElement) {
+            console.log('Tried to update display element, but could not find a display element to update.')
+            return;
         }
-        this.displayElement = element;
+
+        let companyName = '';
+        let icon = '🔍';
+        
+        // Extract the actual company name from brandInfo object
+        if (brandInfo === 'no-info-found') {
+            companyName = 'Unknown Company';
+            icon = '❓';
+        } else if (brandInfo && brandInfo.type === 'book') {
+            companyName = brandInfo.publisher || 'Unknown Publisher';
+            icon = '📚';
+        } else if (brandInfo && brandInfo.type === 'product_with_manufacturer' && brandInfo.manufacturer !== 'information...') {
+            companyName = brandInfo.manufacturer || brandInfo.brand || 'Unknown Company';
+        } else if (ownerInfo && ownerInfo.owning_company_name && ownerInfo.owning_company_name !== brandInfo) {
+            companyName = ownerInfo.owning_company_name;
+        } else if (brandInfo && typeof brandInfo === 'string') {
+            // If brandInfo is already a string
+            companyName = brandInfo;
+        } else if (brandInfo && brandInfo.brand) {
+            // If brandInfo is an object with a brand property
+            companyName = brandInfo.brand;
+        } else if (brandInfo && brandInfo.manufacturer) {
+            // If brandInfo is an object with a manufacturer property
+            companyName = brandInfo.manufacturer;
+        } else {
+            companyName = 'Unknown Company';
+            icon = '❓';
+        }
+
+        console.log('Extracted company name:', companyName); // Debug line
+        console.log('Original brandInfo:', brandInfo); // Debug line
+
+        // Re-render the React component with new props
+        const component = React.createElement(window.CompassAIComponent, { 
+            companyName: companyName,  // Now passing a string instead of object
+            isLoading: false // No longer loading
+        });
+        
+        ReactDOM.render(component, this.displayElement);
+        
+        // Remove loading class from the wrapper div
+        this.displayElement.classList.remove('loading');
     }
 
     insertDisplayElement(element) {
@@ -637,4 +708,4 @@ class  CypherDisplayElementManager {
 }
 
 // Export for use in other modules
-window. CypherDisplayElementManager = CypherDisplayElementManager;
+window.CypherDisplayElementManager = CypherDisplayElementManager;

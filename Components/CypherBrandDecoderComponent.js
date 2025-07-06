@@ -30,4 +30,4 @@ const CypherBrandDecoderComponent = ({ icon, message }) => {
 };
 
 // Export for use in other modules
-window.DisplayElement = CypherBrandDecoderComponent;
+window.CypherDisplayElement = CypherBrandDecoderComponent;
