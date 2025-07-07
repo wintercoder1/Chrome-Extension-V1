@@ -25,7 +25,12 @@ const CompassAIComponent = ({ companyName, politicalData = null, isLoading = fal
     const handleCitationClickFinancialContributionsOverview = (e) => {
         e.preventDefault();
         // Placeholder URL - replace with your actual endpoint later
-        const url = `https://en.wikipedia.org/wiki/${encodeURIComponent(companyName)}`;
+        // Dev
+        // const BASE_URL = 'http://localhost:5173'
+        // Prod
+        const BASE_URL = 'https://wintercoder1.github.io' 
+        // Financial contributions overview URl.
+        const url = `${BASE_URL}/Cool-Project-Frontend#/organization/financial-contributions/${encodeURIComponent(companyName)}`
         window.open(url, '_blank');
     };
     const handleCitationClickWikipedia = (e) => {
