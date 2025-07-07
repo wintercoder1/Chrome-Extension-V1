@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Cypher Brand Decoder",
+  "name": "Tilt/Compass AI Amazon Product Moral Compass Decoder",
   "version": "1.0",
   "description": "Shows the company that owns the brand on Amazon product pages. \n\nCypher - a tool that decodes the unknown and unveils the truth.",
   
@@ -29,7 +29,7 @@
         "*://*.amazon.ca/*/dp/*",
         "*://*.amazon.ca/gp/product/*"
       ],
-      "js": ["React/react.js", "React/react-dom.js", "Components/CypherBrandDecoderComponent.js",  "Components/CompassAIComponent.js", "PageParsers/typicalProductPageParser.js", "PageParsers/bookPageParser.js", "networkManager.js", "CypherDisplayElementManager.js", "content.js"],
+      "js": ["React/react.js", "React/react-dom.js", "Components/CypherBrandDecoderComponent.js",  "Components/CompassAIComponent.js", "PageParsers/typicalProductPageParser.js", "PageParsers/bookPageParser.js", "networkManager.js", "DisplayElementManager.js", "content.js"],
       "css": ["styles.css"],
       "run_at": "document_idle"
     }
@@ -37,7 +37,7 @@
   
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Cypher Brand Decoder Settings"
+    "default_title": "Tilt/Compass AI Settings"
   },
   "web_accessible_resources": [
     {

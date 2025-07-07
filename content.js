@@ -23,9 +23,6 @@ class AmazonBrandTracker {
     this.networkManager = new NetworkManager();
 
     // // Call this when your extension initializes
-    // injectCSS();
-    // this.init();
-
     // Inject CSS first, then initialize
     this.initializeWithCSS();
   }
@@ -57,7 +54,7 @@ class AmazonBrandTracker {
     }
 
     // This is init here to correctly load the user toggled setting (if set).
-    this.displayElementManager = new CypherDisplayElementManager(this.layoutMode)
+    this.displayElementManager = new DisplayElementManager(this.layoutMode)
 
     // Wait for page to load and then extract brand info
     if (document.readyState === 'loading') {
@@ -66,28 +63,6 @@ class AmazonBrandTracker {
       this.classifyWebpageExtractInfoAndUpdateDisplayWithCompassComponent();
     }
   }
-
-  // async init() {
-  //   // Load layout preference from storage
-  //   try {
-  //     const result = await chrome.storage.sync.get(['layoutMode']);
-  //     this.layoutMode = result.layoutMode || this.layoutDefaultMode;
-  //     console.log('Loaded layout mode:', this.layoutMode);
-  //   } catch (error) {
-  //     console.log('Could not load layout preference, using default:', error);
-  //   }
-
-  //   // This is init here to correclty load the user toggled setting (if set).
-  //   this.displayElementManager = new  CypherDisplayElementManager(this.layoutMode)
-
-  //   // Wait for page to load and then extract brand info
-  //   if (document.readyState === 'loading') {
-  //     document.addEventListener('DOMContentLoaded', () => this.classifyWebpageExtractInfoAndUpdateDisplay());
-  //   } else {
-  //     // this.classifyWebpageExtractInfoAndUpdateDisplay();
-  //     this.classifyWebpageExtractInfoAndUpdateDisplayWithCompassComponent();
-  //   }
-  // }
  
   classifyProductAndExtractBrandInfo() {
     // Check for manufacturer information first (more reliable for ownership).
@@ -165,61 +140,66 @@ class AmazonBrandTracker {
 
 
   async classifyWebpageExtractInfoAndUpdateDisplayWithCompassComponent() {
-      // Insert Compass component in loading state.
-      
-      // Classify the webpage parse it and return meta data describing what is in the product page.
-      // const brandInfo = this.classifyProductAndExtractBrandInfo();
-      // Optionally fetch company from network if needed
-      // const ownerInfo = await this.networkManager.fetchBrandOwner(brandInfo);
+    // First we create the component. It will initially be in its loading state.
+    console.log('Now displaying extension component...');
+    const displayInfo = {'type': 'product_with_manufacturer'};
+    const loadingElement = this.displayElementManager.createDisplayElementWithComponentCompass(displayInfo, null, true);
+    loadingElement.classList.add('loading');
+    this.displayElementManager.insertDisplayElement(loadingElement);
+    
+    // Classify the webpage and extract brand info
+    const brandInfo = this.classifyProductAndExtractBrandInfo();
+    
+    // Extract company name from brandInfo
+    let companyName = '';
+    if (brandInfo === 'no-info-found') {
+        companyName = 'Unknown Company';
+    } else if (brandInfo && brandInfo.type === 'book') {
+        companyName = brandInfo.publisher || 'Unknown Publisher';
+    } else if (brandInfo && brandInfo.type === 'product_with_manufacturer' && brandInfo.manufacturer !== 'information...') {
+        companyName = brandInfo.manufacturer || brandInfo.brand || 'Unknown Company';
+    } else if (brandInfo && typeof brandInfo === 'string') {
+        companyName = brandInfo;
+    } else if (brandInfo && brandInfo.brand) {
+        companyName = brandInfo.brand;
+    } else if (brandInfo && brandInfo.manufacturer) {
+        companyName = brandInfo.manufacturer;
+    } else {
+        companyName = 'Unknown Company';
+    }
 
-      // Call the Compass AI political leaning endpoint.
+    console.log('Extracted company name for API call:', companyName);
 
-      // Populate the Compass AI component with the correct info and take it our of loading state.
-
-
-      // First we create the component. It will intially be in its laoding state.
-      console.log('Now displaying extension component...');
-      const displayInfo = {'type': 'product_with_manufacturer'};
-      const loadingElement = this.displayElementManager.createDisplayElementWithComponentCompass(displayInfo, null, true);
-      loadingElement.classList.add('loading');
-      this.displayElementManager.insertDisplayElement(loadingElement);
-      
-      // Classify the webpage parse it and return meta data describing what is in the product page.
-      const brandInfo = this.classifyProductAndExtractBrandInfo();
-  
-      // If found on Amazon product page of any type.
-      // When the company that owns the brand is found directly on the web page.
-      if (brandInfo) {
-        console.log(brandInfo)
+    // If we have a valid company name, fetch political leaning data
+    if (companyName && companyName !== 'Unknown Company' && companyName !== 'no-info-found') {
+        try {
+            // Call the Compass AI political leaning endpoint
+            console.log('Political leaning data fetch initiated:');
+            const politicalData = await this.networkManager.fetchPoliticalLeaning(companyName);
+            
+            console.log('Political leaning data received:', politicalData);
+            
+            // Update the component with the API data
+            setTimeout(() => {
+                console.log('Will update component now.');
+                this.displayElementManager.updateDisplayElementCompass(companyName, null, politicalData);
+            }, 500);
+            
+        } catch (error) {
+            console.error('Error in political leaning flow:', error);
+            // Fallback to showing basic company info
+            setTimeout(() => {
+                this.displayElementManager.updateDisplayElementCompass(companyName, null, null);
+            }, 500);
+        }
+    } else {
+        // If no valid company name, show error state
+        console.log('No valid company name found, showing error state');
         setTimeout(() => {
-              this.displayElementManager.updateDisplayElementCompass(brandInfo, null);
-          }, 500);
-          return;
-      }
-
-      // Finally if all we got is the brand but no corresponding company behind it we call our own API to 
-      // match the brand with the company that owns it.
-      console.log('Processing regular product page...');
-      const ownerInfo = await this.networkManager.fetchBrandOwner(brandInfo);
-      console.log(`ownerInfo: ${ownerInfo}`);
-      console.log(`brand_name: ${ownerInfo.brand_name}`);
-      console.log(`owning_company_name: ${ownerInfo.owning_company_name}`);
-      
-  //     // Error case
-  //     if (!brandInfo) {
-  //       console.log('No brand info found, showing error message...');
-  //       setTimeout(() => {
-  //           this.displayElementManager.updateDisplayElement('no-info-found', null);
-  //       }, 500);
-  //       return;
-  //     }
-
-  // //     // Final case. Update with results of netowrk call.
-  // //     // Update the UI compmenet with the newtork fetching company owner information.
-  // //     this.displayElementManager.updateDisplayElement(brandInfo, ownerInfo); 
-
+            this.displayElementManager.updateDisplayElementCompass('no-info-found', null, null);
+        }, 500);
+    }
   }
-
   
 }
 

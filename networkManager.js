@@ -87,6 +87,53 @@ class NetworkManager {
     );
   }
 
+  async fetchPoliticalLeaning(companyName) {
+        console.log('Now fetching political leaning....')
+
+        if (!companyName || companyName === 'no-info-found') {
+            console.log('No company name provided for political leaning fetch');
+            return null;
+        }
+
+        try {
+            // Clean and encode the company name for the URL
+            const encodedCompanyName = encodeURIComponent(companyName.trim());
+            const url = `https://compass-ai-internal-api.com/getPoliticalLeaning/${encodedCompanyName}`;
+            
+            console.log('Fetching political leaning from:', url);
+            
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                console.error('Political leaning API response not ok:', response.status, response.statusText);
+                return null;
+            }
+
+            const data = await response.json();
+            console.log('Political leaning API response:', data);
+
+            // Transform the API response to match our component's expected format
+            return {
+                lean: data.lean || 'Unknown',
+                score: data.rating ? data.rating.toString() : 'N/A',
+                description: data.context || 'No political leaning information available.',
+                citationUrl: data.citation || `Financial Contributions Overview for ${data.topic || companyName}`,
+                companyName: data.topic || companyName,
+                timestamp: data.timestamp,
+                debug: data.debug
+            };
+
+        } catch (error) {
+            console.error('Error fetching political leaning:', error);
+            return null;
+        }
+    }
+
   /**
    * Clear the cache (useful for testing or memory management)
    */

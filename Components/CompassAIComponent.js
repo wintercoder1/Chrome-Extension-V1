@@ -1,13 +1,13 @@
 const CompassAIComponent = ({ companyName, politicalData = null, isLoading = false }) => {
-    // Default data structure for future network calls
+    // Default data structure for when API fails or no data
     const defaultPoliticalData = {
-        lean: 'Conservative',
-        score: '3',
-        description: `The company's funding patterns, as reflected in their financial contributions, show a slightly Republican-leaning tendency, with 54.55% of their contributions going to Republican candidates and committees. This, combined with their strategic support for policymakers who can influence healthcare policy, tax policies, and regulatory burdens, indicates a conservative leaning. However, their substantial support for Democratic candidates and commitment to building relationships with lawmakers from both parties suggest a more moderate, pragmatic approach, rather than a strongly conservative one.`,
+        lean: 'Unknown',
+        score: 'N/A',
+        description: 'Political leaning information is not available for this company.',
         citationUrl: `Financial Contributions Overview for ${companyName}`
     };
 
-    // Use provided data or default data for now
+    // Use API data if available, otherwise use default
     const data = politicalData || defaultPoliticalData;
 
     if (isLoading) {
@@ -22,7 +22,13 @@ const CompassAIComponent = ({ companyName, politicalData = null, isLoading = fal
         );
     }
 
-    const handleCitationClick = (e) => {
+    const handleCitationClickFinancialContributionsOverview = (e) => {
+        e.preventDefault();
+        // Placeholder URL - replace with your actual endpoint later
+        const url = `https://en.wikipedia.org/wiki/${encodeURIComponent(companyName)}`;
+        window.open(url, '_blank');
+    };
+    const handleCitationClickWikipedia = (e) => {
         e.preventDefault();
         // Placeholder URL - replace with your actual endpoint later
         const url = `https://en.wikipedia.org/wiki/${encodeURIComponent(companyName)}`;
@@ -30,14 +36,14 @@ const CompassAIComponent = ({ companyName, politicalData = null, isLoading = fal
     };
 
     return React.createElement('div', 
-        { 
-            className: 'tilt-ai-container'
-         },
+        { className: 'tilt-ai-container' },
         React.createElement('div', { className: 'tilt-ai-header' },
             React.createElement('div', { className: 'tilt-ai-brand' }, 'Tilt AI')
         ),
         React.createElement('div', { className: 'tilt-ai-content' },
             React.createElement('div', { className: 'overview-header' },
+                // React.createElement('h2', null, 'Political Leaning Overview for '),
+                // React.createElement('span', { className: 'company-name-highlight' }, companyName)
                 React.createElement('h2', null, 'Political Leaning Overview for '),
                 // React.createElement('span', null, companyName)
                 React.createElement('h2', null, companyName)
@@ -55,21 +61,49 @@ const CompassAIComponent = ({ companyName, politicalData = null, isLoading = fal
             React.createElement('div', { className: 'description-section' },
                 React.createElement('p', { className: 'political-description' }, data.description)
             ),
+            
+            // React.createElement('div', { className: 'citations-section' },
+            //     React.createElement('h4', { className: 'citations-header' }, 'Citations:'),
+            //     // Conditionally render financial contributions citation
+            //     politicalData && politicalData.created_with_financial_contributions_info === true
+            //         ? React.createElement('a', {
+            //             href: '#',
+            //             className: 'citation-link',
+            //             onClick: handleCitationClickFinancialContributionsOverview
+            //         }, `Financial Contributions Data for ${companyName}`)
+            //         : null,
+            //     politicalData && politicalData.created_with_financial_contributions_info === true
+            //         ? React.createElement('br')
+            //         : null,
+            //     // Wikipedia citation.
+            //     React.createElement('a', { 
+            //         href: '#', 
+            //         className: 'citation-link',
+            //         onClick: handleCitationClickWikipedia
+            //     }, 'Wikipedia')
+            // )
             React.createElement('div', { className: 'citations-section' },
                 React.createElement('h4', { className: 'citations-header' }, 'Citations:'),
+                
+                // Render financial contributions citation
+                React.createElement('a', {
+                    href: '#',
+                    className: 'citation-link',
+                    onClick: handleCitationClickFinancialContributionsOverview
+                }, `Financial Contributions Data for ${companyName}`),
+                //
+                React.createElement('br'),
+                // Wikipedia citation.
                 React.createElement('a', { 
                     href: '#', 
                     className: 'citation-link',
-                    onClick: handleCitationClick
-                }, data.citationUrl)
+                    onClick: handleCitationClickWikipedia
+                }, 'Wikipedia')
             )
         )
     );
 };
 
-// clickOnFinancialContributionsOverview() {
-
-// };
 
 // Export for use in other modules
 window.CompassAIComponent = CompassAIComponent;
