@@ -67,37 +67,19 @@ const CompassAIComponent = ({ companyName, politicalData = null, isLoading = fal
                 React.createElement('p', { className: 'political-description' }, data.description)
             ),
             
-            // React.createElement('div', { className: 'citations-section' },
-            //     React.createElement('h4', { className: 'citations-header' }, 'Citations:'),
-            //     // Conditionally render financial contributions citation
-            //     politicalData && politicalData.created_with_financial_contributions_info === true
-            //         ? React.createElement('a', {
-            //             href: '#',
-            //             className: 'citation-link',
-            //             onClick: handleCitationClickFinancialContributionsOverview
-            //         }, `Financial Contributions Data for ${companyName}`)
-            //         : null,
-            //     politicalData && politicalData.created_with_financial_contributions_info === true
-            //         ? React.createElement('br')
-            //         : null,
-            //     // Wikipedia citation.
-            //     React.createElement('a', { 
-            //         href: '#', 
-            //         className: 'citation-link',
-            //         onClick: handleCitationClickWikipedia
-            //     }, 'Wikipedia')
-            // )
             React.createElement('div', { className: 'citations-section' },
                 React.createElement('h4', { className: 'citations-header' }, 'Citations:'),
-                
-                // Render financial contributions citation
-                React.createElement('a', {
-                    href: '#',
-                    className: 'citation-link',
-                    onClick: handleCitationClickFinancialContributionsOverview
-                }, `Financial Contributions Data for ${companyName}`),
-                //
-                React.createElement('br'),
+                // Conditionally render financial contributions citation
+                politicalData && politicalData.created_with_financial_contributions_info === true
+                    ? React.createElement('a', {
+                        href: '#',
+                        className: 'citation-link',
+                        onClick: handleCitationClickFinancialContributionsOverview
+                    }, `Financial Contributions Data for ${companyName}`)
+                    : null,
+                politicalData && politicalData.created_with_financial_contributions_info === true
+                    ? React.createElement('br')
+                    : null,
                 // Wikipedia citation.
                 React.createElement('a', { 
                     href: '#', 
@@ -105,6 +87,24 @@ const CompassAIComponent = ({ companyName, politicalData = null, isLoading = fal
                     onClick: handleCitationClickWikipedia
                 }, 'Wikipedia')
             )
+            // React.createElement('div', { className: 'citations-section' },
+            //     React.createElement('h4', { className: 'citations-header' }, 'Citations:'),
+                
+            //     // Render financial contributions citation
+            //     React.createElement('a', {
+            //         href: '#',
+            //         className: 'citation-link',
+            //         onClick: handleCitationClickFinancialContributionsOverview
+            //     }, `Financial Contributions Data for ${companyName}`),
+            //     //
+            //     React.createElement('br'),
+            //     // Wikipedia citation.
+            //     React.createElement('a', { 
+            //         href: '#', 
+            //         className: 'citation-link',
+            //         onClick: handleCitationClickWikipedia
+            //     }, 'Wikipedia')
+            // )
         )
     );
 };

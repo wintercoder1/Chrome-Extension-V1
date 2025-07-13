@@ -4,7 +4,7 @@ class NetworkManager {
   constructor() {
     this.baseUrl = 'https://compass-ai-internal-api.com';
     this.cache = new Map(); // Simple in-memory cache
-    this.requestTimeout = 10000; // 10 seconds timeout
+    this.requestTimeout = 55000; // 10 seconds timeout
   }
 
   /**
@@ -97,8 +97,9 @@ class NetworkManager {
 
         try {
             // Clean and encode the company name for the URL
-            const encodedCompanyName = encodeURIComponent(companyName.trim());
-            const url = `https://compass-ai-internal-api.com/getPoliticalLeaning/${encodedCompanyName}`;
+            // const encodedCompanyName = encodeURIComponent(companyName.trim());
+            const theCompanyName = companyName.trim();
+            const url = `${this.baseUrl}/getPoliticalLeaning/${theCompanyName}`;
             
             console.log('Fetching political leaning from:', url);
             
@@ -117,15 +118,29 @@ class NetworkManager {
             const data = await response.json();
             console.log('Political leaning API response:', data);
 
+            const lean = data.lean ? data.lean : data.response.lean
+            const rating = data.rating ? data.rating.toString() : (data.response.rating ? data.response.rating.toString() : 'N/A')
+            const context = data.context ? data.context : data.response.context 
+            const topic = data.topic ? data.topic : data.response.topic
+            const timestamp = data.timestamp ? data.timestamp : data.response.timestamp
+            const debug = data.debug ? data.debug : data.response.debug
+            console.log('response: ', data.response)
+            console.log('context: ', context)
+            console.log('lean: ', lean)
+            console.log('rating: ', rating)
+            console.log('topic: ', rating)
+            console.log('timestamp ', timestamp)
+            console.log('debug ', debug)
+
             // Transform the API response to match our component's expected format
             return {
-                lean: data.lean || 'Unknown',
-                score: data.rating ? data.rating.toString() : 'N/A',
-                description: data.context || 'No political leaning information available.',
-                citationUrl: data.citation || `Financial Contributions Overview for ${data.topic || companyName}`,
-                companyName: data.topic || companyName,
-                timestamp: data.timestamp,
-                debug: data.debug
+                lean: lean  || 'Unknown',
+                score: rating || 'N/A',
+                description: context || 'No political leaning information available.',
+                citationUrl: `Financial Contributions Overview for ${topic || companyName}`,
+                companyName:  topic || companyName,
+                timestamp: timestamp,
+                debug: debug
             };
 
         } catch (error) {
