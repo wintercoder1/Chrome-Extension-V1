@@ -1,4 +1,6 @@
-const CompassAIComponent = ({ companyName, politicalData = null, isLoading = false }) => {
+// TODO: Make this work the more traditonal React way with hooks.
+
+const CompassAIComponent = ({ companyName, brandName = null, politicalData = null, isLoading = false }) => {
     // Default data structure for when API fails or no data
     const defaultPoliticalData = {
         lean: 'Unknown',
@@ -9,6 +11,19 @@ const CompassAIComponent = ({ companyName, politicalData = null, isLoading = fal
 
     // Use API data if available, otherwise use default
     const data = politicalData || defaultPoliticalData;
+
+    // If we have a sperate brand name lets actually use that for the title NOT the company. 
+    // This will look more approachable to the normal person.
+    let title_overview_name = companyName;
+    // Prepend text that will inform the user that the company owns that brand. 
+    // This will be worth making very upfront to users to avoid confusion.
+    let description_context = data.description;
+    if (brandName != null && brandName != 'Unknown Brand') {
+        const prepend_text = `${brandName} is owned by ${companyName}. `
+        description_context = prepend_text + description_context;
+        console.log(`Will prepend text ${prepend_text}`)
+        title_overview_name =  brandName;
+    }
 
     if (isLoading) {
         return React.createElement('div', 
@@ -51,7 +66,7 @@ const CompassAIComponent = ({ companyName, politicalData = null, isLoading = fal
                 // React.createElement('span', { className: 'company-name-highlight' }, companyName)
                 React.createElement('h2', null, 'Political Leaning Overview for '),
                 // React.createElement('span', null, companyName)
-                React.createElement('h2', null, companyName)
+                React.createElement('h2', null, title_overview_name)
             ),
             React.createElement('div', { className: 'lean-section' },
                 React.createElement('div', { className: 'lean-row' },
@@ -64,7 +79,7 @@ const CompassAIComponent = ({ companyName, politicalData = null, isLoading = fal
                 )
             ),
             React.createElement('div', { className: 'description-section' },
-                React.createElement('p', { className: 'political-description' }, data.description)
+                React.createElement('p', { className: 'political-description' }, description_context)
             ),
             
             React.createElement('div', { className: 'citations-section' },
@@ -87,24 +102,7 @@ const CompassAIComponent = ({ companyName, politicalData = null, isLoading = fal
                     onClick: handleCitationClickWikipedia
                 }, 'Wikipedia')
             )
-            // React.createElement('div', { className: 'citations-section' },
-            //     React.createElement('h4', { className: 'citations-header' }, 'Citations:'),
-                
-            //     // Render financial contributions citation
-            //     React.createElement('a', {
-            //         href: '#',
-            //         className: 'citation-link',
-            //         onClick: handleCitationClickFinancialContributionsOverview
-            //     }, `Financial Contributions Data for ${companyName}`),
-            //     //
-            //     React.createElement('br'),
-            //     // Wikipedia citation.
-            //     React.createElement('a', { 
-            //         href: '#', 
-            //         className: 'citation-link',
-            //         onClick: handleCitationClickWikipedia
-            //     }, 'Wikipedia')
-            // )
+            
         )
     );
 };

@@ -1,5 +1,8 @@
 // // Page Parser for the typical generic Amazon Product Page.
-// Page Parser for the typical generic Amazon Product Page.
+
+// TODO: Clean this up and remove duplicated or unused code. There will be exmaples of both tbh. AI vibe coding lol.
+// TODO Consider making the manfucturer and brand info extracter its own module and 
+// put the code to insert in a part of the web=bpage into its own module. 
 
 class TypicalProductPageParser {
   constructor() {
@@ -364,40 +367,198 @@ class TypicalProductPageParser {
     return null;
   }
 
+  // extractBrandName() {
+  //   // Try multiple selectors to find the brand name
+  //   const brandSelectors = [
+  //     // Standard brand row in product details
+  //     'tr:has(td:contains("Brand")) td:not(:contains("Brand"))',
+  //     'tr:has(span:contains("Brand")) span:not(:contains("Brand"))',
+  //     // Feature list brand
+  //     '#feature-bullets ul li:contains("Brand:")',
+  //     // Product details table
+  //     '.prodDetTable tr:contains("Brand") td:last-child',
+  //     // Alternative brand selectors
+  //     '[data-feature-name="brand"] .a-offscreen',
+  //     '.po-brand .po-break-word',
+  //     '#productDetails_detailBullets_sections1 tr:contains("Brand") td:last-child'
+  //   ];
+
+  //   for (const selector of brandSelectors) {
+  //     try {
+  //       // Handle jQuery-style :contains selector manually
+  //       if (selector.includes(':contains(')) {
+  //         const brand = this.findBrandWithContains();
+  //         if (brand) return brand.trim();
+  //       } else {
+  //         const element = document.querySelector(selector);
+  //         if (element && element.textContent.trim()) {
+  //           return element.textContent.trim();
+  //         }
+  //       }
+  //     } catch (e) {
+  //       console.log('Selector failed:', selector, e);
+  //     }
+  //   }
+
+  //   return null;
+  // }
+  // Enhanced main brand extraction method
   extractBrandName() {
-    // Try multiple selectors to find the brand name
-    const brandSelectors = [
-      // Standard brand row in product details
-      'tr:has(td:contains("Brand")) td:not(:contains("Brand"))',
-      'tr:has(span:contains("Brand")) span:not(:contains("Brand"))',
-      // Feature list brand
-      '#feature-bullets ul li:contains("Brand:")',
-      // Product details table
-      '.prodDetTable tr:contains("Brand") td:last-child',
-      // Alternative brand selectors
-      '[data-feature-name="brand"] .a-offscreen',
-      '.po-brand .po-break-word',
-      '#productDetails_detailBullets_sections1 tr:contains("Brand") td:last-child'
-    ];
-
-    for (const selector of brandSelectors) {
-      try {
-        // Handle jQuery-style :contains selector manually
-        if (selector.includes(':contains(')) {
-          const brand = this.findBrandWithContains();
-          if (brand) return brand.trim();
-        } else {
-          const element = document.querySelector(selector);
-          if (element && element.textContent.trim()) {
-            return element.textContent.trim();
+      console.log('Starting enhanced brand name extraction...');
+      
+      // Try methods in order of reliability
+      const extractionMethods = [
+          () => this.extractBrandFromStoreLink(),
+          () => this.extractBrandFromMetaInfo(),
+          () => this.extractBrandFromProductDetails(),
+          () => this.extractBrandFromProductTitle()
+      ];
+      
+      for (const method of extractionMethods) {
+          try {
+              const result = method();
+              if (result && result.length > 0) {
+                  // Clean up the result
+                  const cleanBrand = result.replace(/[^\w\s&-]/g, '').trim();
+                  if (cleanBrand.length > 0) {
+                      console.log('Successfully extracted brand:', cleanBrand);
+                      return cleanBrand;
+                  }
+              }
+          } catch (error) {
+              console.warn('Error in brand extraction method:', error);
           }
-        }
-      } catch (e) {
-        console.log('Selector failed:', selector, e);
       }
-    }
+      
+      console.log('No brand found with any method');
+      return null;
+  }
 
-    return null;
+    // Method 1: Extract from store link (highest priority for this case)
+  extractBrandFromStoreLink() {
+      console.log('Attempting to extract brand from store link...');
+      
+      // Look for "Visit the [BRAND] Store" pattern
+      const storeLinks = document.querySelectorAll('a[href*="stores"], a[href*="store"]');
+      for (const link of storeLinks) {
+          const linkText = link.textContent.trim();
+          const visitStoreMatch = linkText.match(/Visit the (.+?) Store/i);
+          if (visitStoreMatch) {
+              const brandName = visitStoreMatch[1].trim();
+              console.log('Found brand from store link:', brandName);
+              return brandName;
+          }
+      }
+      
+      // Alternative: Look for store links in byline info
+      const bylineElement = document.querySelector('#bylineInfo');
+      if (bylineElement) {
+          const bylineText = bylineElement.textContent.trim();
+          const visitStoreMatch = bylineText.match(/Visit the (.+?) Store/i);
+          if (visitStoreMatch) {
+              const brandName = visitStoreMatch[1].trim();
+              console.log('Found brand from byline store link:', brandName);
+              return brandName;
+          }
+      }
+      
+      return null;
+  }
+
+  // Method 2: Extract from product title
+  extractBrandFromProductTitle() {
+      console.log('Attempting to extract brand from product title...');
+      
+      const titleElement = document.querySelector('#productTitle, .product-title, h1');
+      if (titleElement) {
+          const titleText = titleElement.textContent.trim();
+          console.log('Product title:', titleText);
+          
+          // Look for brand at the beginning of title (common pattern)
+          const words = titleText.split(' ');
+          if (words.length > 0) {
+              const firstWord = words[0];
+              // Check if first word looks like a brand (all caps or proper case, not common words)
+              if (firstWord.length > 2 && 
+                  (firstWord === firstWord.toUpperCase() || 
+                  firstWord[0] === firstWord[0].toUpperCase()) &&
+                  !['THE', 'A', 'AN', 'FOR', 'WITH', 'BY'].includes(firstWord.toUpperCase())) {
+                  console.log('Found potential brand from title:', firstWord);
+                  return firstWord;
+              }
+          }
+      }
+      
+      return null;
+  }
+
+  // Method 3: Extract from brand/manufacturer meta information
+  extractBrandFromMetaInfo() {
+      console.log('Attempting to extract brand from meta information...');
+      
+      // Look for brand in various meta selectors
+      const brandSelectors = [
+          '[data-brand]',
+          '[data-manufacturer]',
+          '.brand-name',
+          '.manufacturer-name',
+          '#brand',
+          '#manufacturer'
+      ];
+      
+      for (const selector of brandSelectors) {
+          const element = document.querySelector(selector);
+          if (element) {
+              const brandValue = element.getAttribute('data-brand') || 
+                              element.getAttribute('data-manufacturer') || 
+                              element.textContent.trim();
+              if (brandValue && brandValue.length > 0) {
+                  console.log('Found brand from meta info:', brandValue);
+                  return brandValue;
+              }
+          }
+      }
+      
+      return null;
+  }
+
+  // Method 4: Enhanced product details extraction
+  extractBrandFromProductDetails() {
+      console.log('Attempting to extract brand from product details section...');
+      
+      // Look for product details section
+      const productDetailsSelectors = [
+          '#productDetails_feature_div',
+          '#feature-bullets',
+          '#detailBullets_feature_div',
+          '.product-details'
+      ];
+      
+      for (const selector of productDetailsSelectors) {
+          const detailsSection = document.querySelector(selector);
+          if (detailsSection) {
+              const detailsText = detailsSection.textContent;
+              
+              // Look for various brand/manufacturer patterns
+              const patterns = [
+                  /Brand\s*:?\s*([^\n\r,]+)/i,
+                  /Manufacturer\s*:?\s*([^\n\r,]+)/i,
+                  /Made by\s*:?\s*([^\n\r,]+)/i,
+                  /By\s+([A-Z][a-zA-Z\s&-]+)/
+              ];
+              
+              for (const pattern of patterns) {
+                  const match = detailsText.match(pattern);
+                  if (match && match[1]) {
+                      const brand = match[1].trim();
+                      console.log('Found brand from product details:', brand);
+                      return brand;
+                  }
+              }
+          }
+      }
+      
+      return null;
   }
 }
 
