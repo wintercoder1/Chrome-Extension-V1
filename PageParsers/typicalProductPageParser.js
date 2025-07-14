@@ -1,8 +1,9 @@
 // // Page Parser for the typical generic Amazon Product Page.
 
-// TODO: Clean this up and remove duplicated or unused code. There will be exmaples of both tbh. AI vibe coding lol.
+// TODO: Clean this up and remove duplicated or unused code. 
+//       There will be exmaples of both tbh. AI vibe coding lol.
 // TODO Consider making the manfucturer and brand info extracter its own module and 
-// put the code to insert in a part of the web=bpage into its own module. 
+//      put the code to insert in a part of the web=bpage into its own module. 
 
 class TypicalProductPageParser {
   constructor() {
