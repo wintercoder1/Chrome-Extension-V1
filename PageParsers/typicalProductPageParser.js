@@ -51,140 +51,140 @@ class TypicalProductPageParser {
     return null;
   }
 
-  /**
-   * Find the best insertion point for the component - prioritizing higher positions on the page
-   * @returns {Element|null} - The element to insert the component before/after
-   */
-  findInsertionPoint() {
-    console.log('PageParser: Finding optimal insertion point...');
+  // /**
+  //  * Find the best insertion point for the component - prioritizing higher positions on the page
+  //  * @returns {Element|null} - The element to insert the component before/after
+  //  */
+  // findInsertionPoint() {
+  //   console.log('PageParser: Finding optimal insertion point...');
     
-    // Priority order - from highest to lowest on the page
-    const insertionTargets = [
-      // Target 1: Look for the comparison table area (highest priority)
-      () => {
-        const comparisonTable = document.querySelector('table[role="table"]');
-        if (comparisonTable) {
-          console.log('PageParser: Found comparison table for insertion');
-          return { element: comparisonTable, position: 'before' };
-        }
-        return null;
-      },
+  //   // Priority order - from highest to lowest on the page
+  //   const insertionTargets = [
+  //     // Target 1: Look for the comparison table area (highest priority)
+  //     () => {
+  //       const comparisonTable = document.querySelector('table[role="table"]');
+  //       if (comparisonTable) {
+  //         console.log('PageParser: Found comparison table for insertion');
+  //         return { element: comparisonTable, position: 'before' };
+  //       }
+  //       return null;
+  //     },
       
-      // Target 2: Look for feature comparison section
-      () => {
-        const featureSection = document.querySelector('[data-feature-name="comparison"]');
-        if (featureSection) {
-          console.log('PageParser: Found feature comparison section');
-          return { element: featureSection, position: 'before' };
-        }
-        return null;
-      },
+  //     // Target 2: Look for feature comparison section
+  //     () => {
+  //       const featureSection = document.querySelector('[data-feature-name="comparison"]');
+  //       if (featureSection) {
+  //         console.log('PageParser: Found feature comparison section');
+  //         return { element: featureSection, position: 'before' };
+  //       }
+  //       return null;
+  //     },
       
-      // Target 3: Look for any table in the main content area
-      () => {
-        const tables = document.querySelectorAll('#centerCol table, #leftCol table');
-        for (const table of tables) {
-          // Skip tables that are too high up (like price comparison)
-          const rect = table.getBoundingClientRect();
-          if (rect.top > 200) { // Ensure it's not too high up on the page
-            console.log('PageParser: Found suitable table in main content');
-            return { element: table, position: 'before' };
-          }
-        }
-        return null;
-      },
+  //     // Target 3: Look for any table in the main content area
+  //     () => {
+  //       const tables = document.querySelectorAll('#centerCol table, #leftCol table');
+  //       for (const table of tables) {
+  //         // Skip tables that are too high up (like price comparison)
+  //         const rect = table.getBoundingClientRect();
+  //         if (rect.top > 200) { // Ensure it's not too high up on the page
+  //           console.log('PageParser: Found suitable table in main content');
+  //           return { element: table, position: 'before' };
+  //         }
+  //       }
+  //       return null;
+  //     },
       
-      // Target 4: Look for elements with specific text content that indicate comparison area
-      () => {
-        const elements = Array.from(document.querySelectorAll('*')).filter(el => {
-          const text = el.textContent || '';
-          return text.includes('Customer Reviews') || 
-                 text.includes('Compare with similar items') ||
-                 text.includes('Product information');
-        });
+  //     // Target 4: Look for elements with specific text content that indicate comparison area
+  //     () => {
+  //       const elements = Array.from(document.querySelectorAll('*')).filter(el => {
+  //         const text = el.textContent || '';
+  //         return text.includes('Customer Reviews') || 
+  //                text.includes('Compare with similar items') ||
+  //                text.includes('Product information');
+  //       });
         
-        for (const element of elements) {
-          // Find the parent container that's suitable for insertion
-          let parent = element.closest('[data-feature-name], .a-section, .a-container');
-          if (parent) {
-            console.log('PageParser: Found element with comparison-related text');
-            return { element: parent, position: 'before' };
-          }
-        }
-        return null;
-      },
+  //       for (const element of elements) {
+  //         // Find the parent container that's suitable for insertion
+  //         let parent = element.closest('[data-feature-name], .a-section, .a-container');
+  //         if (parent) {
+  //           console.log('PageParser: Found element with comparison-related text');
+  //           return { element: parent, position: 'before' };
+  //         }
+  //       }
+  //       return null;
+  //     },
       
-      // Target 5: Look for the main product details section
-      () => {
-        const productDetails = document.querySelector('#productDetails_feature_div, #detail-bullets');
-        if (productDetails) {
-          console.log('PageParser: Found product details section');
-          return { element: productDetails, position: 'before' };
-        }
-        return null;
-      },
+  //     // Target 5: Look for the main product details section
+  //     () => {
+  //       const productDetails = document.querySelector('#productDetails_feature_div, #detail-bullets');
+  //       if (productDetails) {
+  //         console.log('PageParser: Found product details section');
+  //         return { element: productDetails, position: 'before' };
+  //       }
+  //       return null;
+  //     },
       
-      // Target 6: Fallback - look for any major section in the center column
-      () => {
-        const centerCol = document.querySelector('#centerCol');
-        if (centerCol) {
-          const sections = centerCol.querySelectorAll('.a-section, [data-feature-name]');
-          // Try to find a section that's not too high up
-          for (const section of sections) {
-            const rect = section.getBoundingClientRect();
-            if (rect.top > 300 && section.offsetHeight > 50) {
-              console.log('PageParser: Found fallback section in center column');
-              return { element: section, position: 'before' };
-            }
-          }
-        }
-        return null;
-      }
-    ];
+  //     // Target 6: Fallback - look for any major section in the center column
+  //     () => {
+  //       const centerCol = document.querySelector('#centerCol');
+  //       if (centerCol) {
+  //         const sections = centerCol.querySelectorAll('.a-section, [data-feature-name]');
+  //         // Try to find a section that's not too high up
+  //         for (const section of sections) {
+  //           const rect = section.getBoundingClientRect();
+  //           if (rect.top > 300 && section.offsetHeight > 50) {
+  //             console.log('PageParser: Found fallback section in center column');
+  //             return { element: section, position: 'before' };
+  //           }
+  //         }
+  //       }
+  //       return null;
+  //     }
+  //   ];
 
-    // Try each insertion target in priority order
-    for (const targetFinder of insertionTargets) {
-      try {
-        const result = targetFinder();
-        if (result) {
-          return result;
-        }
-      } catch (e) {
-        console.log('PageParser: Error with insertion target:', e);
-      }
-    }
+  //   // Try each insertion target in priority order
+  //   for (const targetFinder of insertionTargets) {
+  //     try {
+  //       const result = targetFinder();
+  //       if (result) {
+  //         return result;
+  //       }
+  //     } catch (e) {
+  //       console.log('PageParser: Error with insertion target:', e);
+  //     }
+  //   }
 
-    console.log('PageParser: No suitable insertion point found');
-    return null;
-  }
+  //   console.log('PageParser: No suitable insertion point found');
+  //   return null;
+  // }
 
-  /**
-   * Insert component at the optimal location
-   * @param {Element} component - The component to insert
-   * @returns {boolean} - Success status
-   */
-  insertComponent(component) {
-    const insertionInfo = this.findInsertionPoint();
+  // /**
+  //  * Insert component at the optimal location
+  //  * @param {Element} component - The component to insert
+  //  * @returns {boolean} - Success status
+  //  */
+  // insertComponent(component) {
+  //   const insertionInfo = this.findInsertionPoint();
     
-    if (!insertionInfo) {
-      console.log('PageParser: Could not find insertion point');
-      return false;
-    }
+  //   if (!insertionInfo) {
+  //     console.log('PageParser: Could not find insertion point');
+  //     return false;
+  //   }
 
-    try {
-      if (insertionInfo.position === 'before') {
-        insertionInfo.element.parentNode.insertBefore(component, insertionInfo.element);
-      } else {
-        insertionInfo.element.parentNode.insertBefore(component, insertionInfo.element.nextSibling);
-      }
+  //   try {
+  //     if (insertionInfo.position === 'before') {
+  //       insertionInfo.element.parentNode.insertBefore(component, insertionInfo.element);
+  //     } else {
+  //       insertionInfo.element.parentNode.insertBefore(component, insertionInfo.element.nextSibling);
+  //     }
       
-      console.log('PageParser: Component inserted successfully');
-      return true;
-    } catch (e) {
-      console.log('PageParser: Error inserting component:', e);
-      return false;
-    }
-  }
+  //     console.log('PageParser: Component inserted successfully');
+  //     return true;
+  //   } catch (e) {
+  //     console.log('PageParser: Error inserting component:', e);
+  //     return false;
+  //   }
+  // }
 
   /**
    * Extract manufacturer information when available
