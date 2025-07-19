@@ -30,7 +30,7 @@
         "*://*.amazon.ca/*/dp/*",
         "*://*.amazon.ca/gp/product/*"
       ],
-      "js": ["React/react.js", "React/react-dom.js", "Util/ChromeGlobalVariablesAndMethods.js", "Util/ChromeRuntimeMessageListeners.js",  "Components/CypherBrandDecoderComponent.js",  "Components/TiltAIHeader.js", "Components/CompassAIComponent.js", "PageParsers/typicalProductPageParser.js", "PageParsers/bookPageParser.js", "ComponentInsertionManager.js", "NetworkManager.js", "DisplayElementManager.js", "content.js"],
+      "js": ["React/react.js", "React/react-dom.js", "Util/ChromeGlobalVariablesAndMethods.js", "Util/ChromeRuntimeMessageListeners.js", "Util/OverlayPopupManager.js", "Components/CypherBrandDecoderComponent.js",  "Components/TiltAIHeader.js", "Components/CompassAIComponent.js", "PageParsers/typicalProductPageParser.js", "PageParsers/bookPageParser.js", "ComponentInsertionManager.js", "NetworkManager.js", "DisplayElementManager.js", "content.js"],
       "css": ["styles.css"],
       "run_at": "document_idle"
     }

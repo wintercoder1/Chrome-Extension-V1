@@ -118,23 +118,26 @@
       border: 1px solid #f5c6cb;
     }
     
-    /* New styles for refresh section */
+    /* Refresh section styles */
     .refresh-section {
       border-top: 1px solid #ddd;
       padding-top: 16px;
       margin-top: 16px;
     }
-    .refresh-button {
+    .action-button {
       width: 100%;
       padding: 12px;
-      background: #ff9900;
-      color: white;
       border: none;
       border-radius: 6px;
       font-size: 14px;
       font-weight: 500;
       cursor: pointer;
       transition: background 0.3s;
+      margin-bottom: 8px;
+    }
+    .refresh-button {
+      background: #ff9900;
+      color: white;
     }
     .refresh-button:hover {
       background: #e68900;
@@ -146,7 +149,24 @@
       background: #ccc;
       cursor: not-allowed;
     }
-    .refresh-description {
+    
+    /* New overlay button styles */
+    .overlay-button {
+      background: #232f3e;
+      color: white;
+    }
+    .overlay-button:hover {
+      background: #1a252f;
+    }
+    .overlay-button:active {
+      background: #131b22;
+    }
+    .overlay-button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .button-description {
       font-size: 11px;
       color: #666;
       margin-bottom: 12px;
@@ -197,12 +217,20 @@
   </div>
 
   <div class="refresh-section">
-    <div class="setting-label">Manual Component Refresh</div>
-    <div class="refresh-description">
+    <div class="setting-label">Component Controls</div>
+    
+    <div class="button-description">
       If the component doesn't appear on a page, use this button to manually trigger the insertion after the page has fully loaded.
     </div>
-    <button class="refresh-button" id="refreshButton">
+    <button class="action-button refresh-button" id="refreshButton">
       🔄 Force Refresh Component
+    </button>
+    
+    <div class="button-description">
+      Show the component in a full-screen overlay if page insertion fails. Works as a last resort display method.
+    </div>
+    <button class="action-button overlay-button" id="overlayButton">
+      🖼️ Force Overlay Display
     </button>
     
     <div class="debug-section" id="debugSection" style="display: none;">
@@ -328,12 +356,74 @@
       color: #155724;
       border: 1px solid #c3e6cb;
     }
+    .status.warning {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    /* New styles for refresh section */
+    .refresh-section {
+      border-top: 1px solid #ddd;
+      padding-top: 16px;
+      margin-top: 16px;
+    }
+    .refresh-button {
+      width: 100%;
+      padding: 12px;
+      background: #ff9900;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .refresh-button:hover {
+      background: #e68900;
+    }
+    .refresh-button:active {
+      background: #cc7700;
+    }
+    .refresh-button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .refresh-description {
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+    .debug-section {
+      margin-top: 12px;
+      padding: 8px;
+      background: #f5f5f5;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+    .debug-title {
+      font-weight: 500;
+      font-size: 12px;
+      margin-bottom: 6px;
+      color: #232f3e;
+    }
+    .debug-info {
+      font-size: 10px;
+      color: #666;
+      font-family: monospace;
+    }
   </style>
 </head>
 <body>
   <div class="header">
-   
-    <h1>🔍 Compass/Tilt AI Brand Decoder (Final name pending..)</h1>
+    <h1>🔍 Compass/Tilt AI Brand Decoder</h1>
     <p>Configure display preferences</p>
   </div>
   
@@ -352,6 +442,21 @@
     <div class="preview" id="preview">
       <div class="preview-title">Current Setting:</div>
       <div class="preview-text" id="previewText">Brand info will appear in the buy box (right side)</div>
+    </div>
+  </div>
+
+  <div class="refresh-section">
+    <div class="setting-label">Manual Component Refresh</div>
+    <div class="refresh-description">
+      If the component doesn't appear on a page, use this button to manually trigger the insertion after the page has fully loaded.
+    </div>
+    <button class="refresh-button" id="refreshButton">
+      🔄 Force Refresh Component
+    </button>
+    
+    <div class="debug-section" id="debugSection" style="display: none;">
+      <div class="debug-title">Debug Info:</div>
+      <div class="debug-info" id="debugInfo">No debug data available</div>
     </div>
   </div>
   
