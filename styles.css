@@ -132,6 +132,21 @@
   }
 }
 
+.tilt-ai-header {
+    display: flex;
+    align-items: center;
+    /* background: transparent; */
+    background-color: #e8f4f8;
+    background: #e8f4f8;
+    gap: 8px; /* spacing between icon and text */
+}
+
+.tilt-ai-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
 /* Integration with Amazon's buy box styling */
 #buybox .brand-owner-info,
 #rightCol .brand-owner-info {

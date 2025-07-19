@@ -28,9 +28,7 @@ const CompassAIComponent = ({ companyName, brandName = null, politicalData = nul
     if (isLoading) {
         return React.createElement('div', 
             { className: 'tilt-ai-container loading' },
-            React.createElement('div', { className: 'tilt-ai-header' },
-                React.createElement('div', { className: 'tilt-ai-brand' }, 'Tilt AI')
-            ),
+            React.createElement(window.TiltAIHeader),
             React.createElement('div', { className: 'tilt-ai-content' },
                 React.createElement('div', { className: 'loading-placeholder' }, 'Loading political analysis...')
             )
@@ -57,9 +55,7 @@ const CompassAIComponent = ({ companyName, brandName = null, politicalData = nul
 
     return React.createElement('div', 
         { className: 'tilt-ai-container' },
-        React.createElement('div', { className: 'tilt-ai-header' },
-            React.createElement('div', { className: 'tilt-ai-brand' }, 'Tilt AI')
-        ),
+        React.createElement(window.TiltAIHeader),
         React.createElement('div', { className: 'tilt-ai-content' },
             React.createElement('div', { className: 'overview-header' },
                 // React.createElement('h2', null, 'Political Leaning Overview for '),
