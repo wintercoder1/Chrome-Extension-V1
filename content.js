@@ -116,48 +116,48 @@ class AmazonBrandTracker {
 //         this.displayElementManager.updateDisplayElement(brandInfo, ownerInfo); 
 //     }
 
-//     classifyProductAndExtractBrandInfo() {
-//       console.log('Starting product classification and brand extraction...');
+    classifyProductAndExtractBrandInfo() {
+      console.log('Starting product classification and brand extraction...');
       
-//       // First check if this is a book page (books have different structure)
-//       const isBookPage = this.isBookPage();
-//       if (isBookPage) {
-//           console.log('Detected book page, using book parser...');
-//           const bookInfo = this.bookPageParser.extractBrandName();
-//           if (bookInfo) {
-//               console.log('Found book info:', bookInfo);
-//               return bookInfo;
-//           }
-//       }
+      // First check if this is a book page (books have different structure)
+      const isBookPage = this.isBookPage();
+      if (isBookPage) {
+          console.log('Detected book page, using book parser...');
+          const bookInfo = this.bookPageParser.extractBrandName();
+          if (bookInfo) {
+              console.log('Found book info:', bookInfo);
+              return bookInfo;
+          }
+      }
       
-//       // PRIORITY 1: Try to extract explicit manufacturer from product details
-//       console.log('Attempting to extract explicit manufacturer info...');
-//       let brandInfo = this.pageParser.extractManufacturerInfo();
-//       console.log('Found manufacturuer info? : ', brandInfo);
+      // PRIORITY 1: Try to extract explicit manufacturer from product details
+      console.log('Attempting to extract explicit manufacturer info...');
+      let brandInfo = this.pageParser.extractManufacturerInfo();
+      console.log('Found manufacturuer info? : ', brandInfo);
       
-//       if (brandInfo && brandInfo.manufacturer && brandInfo.manufacturer !== 'information...') {
-//           console.log('Successfully found explicit manufacturer info:', brandInfo);
-//           return brandInfo;
-//       }
+      if (brandInfo && brandInfo.manufacturer && brandInfo.manufacturer !== 'information...') {
+          console.log('Successfully found explicit manufacturer info:', brandInfo);
+          return brandInfo;
+      }
       
-//       // PRIORITY 2: If no explicit manufacturer found, try enhanced brand extraction methods
-//       console.log('No explicit manufacturer found, trying enhanced brand extraction...');
-//       const brandName = this.pageParser.extractBrandName();
+      // PRIORITY 2: If no explicit manufacturer found, try enhanced brand extraction methods
+      console.log('No explicit manufacturer found, trying enhanced brand extraction...');
+      const brandName = this.pageParser.extractBrandName();
       
-//       if (brandName) {
-//           console.log('Successfully extracted brand name:', brandName);
-//           // Return in the expected format
-//           return {
-//               type: 'product_with_manufacturer',
-//               brand: brandName,
-//               manufacturer: brandName
-//           };
-//       }
+      if (brandName) {
+          console.log('Successfully extracted brand name:', brandName);
+          // Return in the expected format
+          return {
+              type: 'product_with_manufacturer',
+              brand: brandName,
+              manufacturer: brandName
+          };
+      }
       
-//       // Final fallback - return no info found
-//       console.log('No brand or manufacturer information could be extracted');
-//       return 'no-info-found';
-//   }
+      // Final fallback - return no info found
+      console.log('No brand or manufacturer information could be extracted');
+      return 'no-info-found';
+  }
 
   // Helper method to detect if this is a book page
   
