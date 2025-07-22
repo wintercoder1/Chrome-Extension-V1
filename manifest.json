@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Tilt/Compass AI Amazon Product Moral Compass Decoder",
+  "name": "Tilt AI - Amazon Shopping Assistant. Only buy from companies that align with your moral compass.",
   "version": "1.0",
-  "description": "Shows the company that owns the brand on Amazon product pages. \n\nCypher - a tool that decodes the unknown and unveils the truth.",
+  "description": "Displays the political lean of companies that make the product as you look at it on Amazon. It allow users to only support companies that allign to their moral compass. \n\nWhat way does the company Tilt?",
   
   "permissions": [
     "activeTab",
@@ -47,9 +47,9 @@
     }
   ],
   "icons": {
-    "16": "icons/icon16.png",
-    "32": "icons/icon32.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
+    "16": "icons/tilt_logo@16.png",
+    "32": "icons/tilt_logo@32.png",
+    "48": "icons/tilt_logo@48.png",
+    "128": "icons/tilt_logo@128.png"
   }
 }

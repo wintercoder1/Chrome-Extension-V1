@@ -73,93 +73,94 @@ class AmazonBrandTracker {
   /* This method ties together the methods from the other modules:
      DisplayElementFactory, PageParser, and NetworkManager.
   */
-    async classifyWebpageExtractInfoAndUpdateDisplay () {
+//     async classifyWebpageExtractInfoAndUpdateDisplay () {
 
-        // First we create the component. It will intially be in its laoding state.
-        console.log('Now displaying extension component...');
-        const displayInfo = {'type': 'product_with_manufacturer'};
-        const loadingElement = this.displayElementManager.createDisplayElementWithComponent(displayInfo, null, true);
-        loadingElement.classList.add('loading');
-        this.displayElementManager.insertDisplayElement(loadingElement);
+//         // First we create the component. It will intially be in its laoding state.
+//         console.log('Now displaying extension component...');
+//         const displayInfo = {'type': 'product_with_manufacturer'};
+//         const loadingElement = this.displayElementManager.createDisplayElementWithComponent(displayInfo, null, true);
+//         loadingElement.classList.add('loading');
+//         this.displayElementManager.insertDisplayElement(loadingElement);
         
-        // Classify the webpage parse it and return meta data describing what is in the product page.
-        const brandInfo = this.classifyProductAndExtractBrandInfo();
+//         // Classify the webpage parse it and return meta data describing what is in the product page.
+//         const brandInfo = this.classifyProductAndExtractBrandInfo();
     
-        // If found on Amazon product page of any type.
-        // When the company that owns the brand is found directly on the web page.
-        if (brandInfo) {
-          setTimeout(() => {
-                this.displayElementManager.updateDisplayElement(brandInfo, null);
-            }, 500);
-            return;
-        }
+//         // If found on Amazon product page of any type.
+//         // When the company that owns the brand is found directly on the web page.
+//         if (brandInfo) {
+//           setTimeout(() => {
+//                 this.displayElementManager.updateDisplayElement(brandInfo, null);
+//             }, 500);
+//             return;
+//         }
 
-        // Finally if all we got is the brand but no corresponding company behind it we call our own API to 
-        // match the brand with the company that owns it.
-        console.log('Processing regular product page...');
-        const ownerInfo = await this.networkManager.fetchBrandOwner(brandInfo);
-        console.log(`ownerInfo: ${ownerInfo}`);
-        console.log(`brand_name: ${ownerInfo.brand_name}`);
-        console.log(`owning_company_name: ${ownerInfo.owning_company_name}`);
+//         // Finally if all we got is the brand but no corresponding company behind it we call our own API to 
+//         // match the brand with the company that owns it.
+//         console.log('Processing regular product page...');
+//         const ownerInfo = await this.networkManager.fetchBrandOwner(brandInfo);
+//         console.log(`ownerInfo: ${ownerInfo}`);
+//         console.log(`brand_name: ${ownerInfo.brand_name}`);
+//         console.log(`owning_company_name: ${ownerInfo.owning_company_name}`);
         
-        // Error case
-        if (!brandInfo) {
-          console.log('No brand info found, showing error message...');
-          setTimeout(() => {
-              this.displayElementManager.updateDisplayElement('no-info-found', null);
-          }, 500);
-          return;
-        }
+//         // Error case
+//         if (!brandInfo) {
+//           console.log('No brand info found, showing error message...');
+//           setTimeout(() => {
+//               this.displayElementManager.updateDisplayElement('no-info-found', null);
+//           }, 500);
+//           return;
+//         }
 
-        // Final case. Update with results of netowrk call.
-        // Update the UI compmenet with the newtork fetching company owner information.
-        this.displayElementManager.updateDisplayElement(brandInfo, ownerInfo); 
-    }
+//         // Final case. Update with results of netowrk call.
+//         // Update the UI compmenet with the newtork fetching company owner information.
+//         this.displayElementManager.updateDisplayElement(brandInfo, ownerInfo); 
+//     }
 
-    classifyProductAndExtractBrandInfo() {
-      console.log('Starting product classification and brand extraction...');
+//     classifyProductAndExtractBrandInfo() {
+//       console.log('Starting product classification and brand extraction...');
       
-      // First check if this is a book page (books have different structure)
-      const isBookPage = this.isBookPage();
-      if (isBookPage) {
-          console.log('Detected book page, using book parser...');
-          const bookInfo = this.bookPageParser.extractBrandName();
-          if (bookInfo) {
-              console.log('Found book info:', bookInfo);
-              return bookInfo;
-          }
-      }
+//       // First check if this is a book page (books have different structure)
+//       const isBookPage = this.isBookPage();
+//       if (isBookPage) {
+//           console.log('Detected book page, using book parser...');
+//           const bookInfo = this.bookPageParser.extractBrandName();
+//           if (bookInfo) {
+//               console.log('Found book info:', bookInfo);
+//               return bookInfo;
+//           }
+//       }
       
-      // PRIORITY 1: Try to extract explicit manufacturer from product details
-      console.log('Attempting to extract explicit manufacturer info...');
-      let brandInfo = this.pageParser.extractManufacturerInfo();
-      console.log('Found manufacturuer info? : ', brandInfo);
+//       // PRIORITY 1: Try to extract explicit manufacturer from product details
+//       console.log('Attempting to extract explicit manufacturer info...');
+//       let brandInfo = this.pageParser.extractManufacturerInfo();
+//       console.log('Found manufacturuer info? : ', brandInfo);
       
-      if (brandInfo && brandInfo.manufacturer && brandInfo.manufacturer !== 'information...') {
-          console.log('Successfully found explicit manufacturer info:', brandInfo);
-          return brandInfo;
-      }
+//       if (brandInfo && brandInfo.manufacturer && brandInfo.manufacturer !== 'information...') {
+//           console.log('Successfully found explicit manufacturer info:', brandInfo);
+//           return brandInfo;
+//       }
       
-      // PRIORITY 2: If no explicit manufacturer found, try enhanced brand extraction methods
-      console.log('No explicit manufacturer found, trying enhanced brand extraction...');
-      const brandName = this.pageParser.extractBrandName();
+//       // PRIORITY 2: If no explicit manufacturer found, try enhanced brand extraction methods
+//       console.log('No explicit manufacturer found, trying enhanced brand extraction...');
+//       const brandName = this.pageParser.extractBrandName();
       
-      if (brandName) {
-          console.log('Successfully extracted brand name:', brandName);
-          // Return in the expected format
-          return {
-              type: 'product_with_manufacturer',
-              brand: brandName,
-              manufacturer: brandName
-          };
-      }
+//       if (brandName) {
+//           console.log('Successfully extracted brand name:', brandName);
+//           // Return in the expected format
+//           return {
+//               type: 'product_with_manufacturer',
+//               brand: brandName,
+//               manufacturer: brandName
+//           };
+//       }
       
-      // Final fallback - return no info found
-      console.log('No brand or manufacturer information could be extracted');
-      return 'no-info-found';
-  }
+//       // Final fallback - return no info found
+//       console.log('No brand or manufacturer information could be extracted');
+//       return 'no-info-found';
+//   }
 
   // Helper method to detect if this is a book page
+  
   isBookPage() {
       // Check for book-specific indicators
       const bookIndicators = [
@@ -217,6 +218,10 @@ class AmazonBrandTracker {
         companyName = productPageInfo.brand;
     } else if (productPageInfo && productPageInfo.manufacturer) {
         companyName = productPageInfo.manufacturer;
+        // Weird corner case that comes up.
+        if (productPageInfo.manufacturer == 'No' || productPageInfo.manufacturer == 'No.') {
+            companyName = productPageInfo.brand;
+        }
     } else {
         companyName = 'Unknown Company';
     }
