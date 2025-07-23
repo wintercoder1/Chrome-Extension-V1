@@ -122,6 +122,7 @@ class NetworkManager {
             const rating = data.rating ? data.rating.toString() : (data.response.rating ? data.response.rating.toString() : 'N/A')
             const context = data.context ? data.context : data.response.context 
             const topic = data.topic ? data.topic : data.response.topic
+            const created_with_financial_contributions_info = data.created_with_financial_contributions_info ? data.created_with_financial_contributions_info : data.response.created_with_financial_contributions_info 
             const timestamp = data.timestamp ? data.timestamp : data.response.timestamp
             const debug = data.debug ? data.debug : data.response.debug
             console.log('response: ', data.response)
@@ -129,6 +130,7 @@ class NetworkManager {
             console.log('lean: ', lean)
             console.log('rating: ', rating)
             console.log('topic: ', rating)
+            console.log('created_with_financial_contributions_info', created_with_financial_contributions_info)
             console.log('timestamp ', timestamp)
             console.log('debug ', debug)
 
@@ -139,6 +141,7 @@ class NetworkManager {
                 description: context || 'No political leaning information available.',
                 citationUrl: `Financial Contributions Overview for ${topic || companyName}`,
                 companyName:  topic || companyName,
+                created_with_financial_contributions_info: created_with_financial_contributions_info,
                 timestamp: timestamp,
                 debug: debug
             };
