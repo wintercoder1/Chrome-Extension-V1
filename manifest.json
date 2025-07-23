@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Tilt AI - Amazon Shopping Assistant. Only buy from companies that align with your moral compass.",
+  "name": "Tilt AI - Only buy products that align with your moral compass.",
   "version": "1.0",
-  "description": "Displays the political lean of companies that make the product as you look at it on Amazon. It allow users to only support companies that allign to their moral compass. \n\nWhat way does the company Tilt?",
+  "description": "Displays the political lean of companies on Amazon. Powered by AI. Allows users to support companies that allign with their beliefs.",
   
   "permissions": [
     "activeTab",

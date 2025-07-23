@@ -132,12 +132,12 @@ class AmazonBrandTracker {
       
       // PRIORITY 1: Try to extract explicit manufacturer from product details
       console.log('Attempting to extract explicit manufacturer info...');
-      let brandInfo = this.pageParser.extractManufacturerInfo();
-      console.log('Found manufacturuer info? : ', brandInfo);
+      let productPageInfo = this.pageParser.extractManufacturerInfo();
+      console.log('Found manufacturuer info? : ', productPageInfo);
       
-      if (brandInfo && brandInfo.manufacturer && brandInfo.manufacturer !== 'information...') {
-          console.log('Successfully found explicit manufacturer info:', brandInfo);
-          return brandInfo;
+      if (productPageInfo && productPageInfo.manufacturer && productPageInfo.manufacturer !== 'information...') {
+          console.log('Successfully found explicit manufacturer info:', productPageInfo);
+          return productPageInfo;
       }
       
       // PRIORITY 2: If no explicit manufacturer found, try enhanced brand extraction methods
@@ -197,13 +197,14 @@ class AmazonBrandTracker {
     // Classify the webpage and extract brand info
     const productPageInfo = this.classifyProductAndExtractBrandInfo();
     
-    // Extract company name from brandInfo
+    // Logic to take the correct brand and manufacturer info from the product info dict.
     let companyName = '';
     let brandName = null;
+    // Extract the actual company name from brandInfo object
     if (productPageInfo === 'no-info-found') {
         companyName = 'Unknown Company';
     } else if (productPageInfo && productPageInfo.type === 'product_with_manufacturer' && 
-                   productPageInfo.brand !== productPageInfo.manufacturer) {
+                productPageInfo.brand !== productPageInfo.manufacturer) {
         // This is one of the most common cases likely. 
         // The product will have a brand, but the contribution info will be from the parent company.
         brandName = productPageInfo.brand;
@@ -212,18 +213,35 @@ class AmazonBrandTracker {
         companyName = productPageInfo.publisher || 'Unknown Publisher';
     } else if (productPageInfo && productPageInfo.type === 'product_with_manufacturer' && productPageInfo.manufacturer !== 'information...') {
         companyName = productPageInfo.manufacturer || productPageInfo.brand || 'Unknown Company';
+    } else if (ownerInfo && ownerInfo.owning_company_name && ownerInfo.owning_company_name !== productPageInfo) {
+        companyName = ownerInfo.owning_company_name;
     } else if (productPageInfo && typeof productPageInfo === 'string') {
+        // If productPageInfo is already a string
         companyName = productPageInfo;
     } else if (productPageInfo && productPageInfo.brand) {
+        // If productPageInfo is an object with a brand property
         companyName = productPageInfo.brand;
     } else if (productPageInfo && productPageInfo.manufacturer) {
+        // If productPageInfo is an object with a manufacturer property
         companyName = productPageInfo.manufacturer;
-        // Weird corner case that comes up.
-        if (productPageInfo.manufacturer == 'No' || productPageInfo.manufacturer == 'No.') {
-            companyName = productPageInfo.brand;
-        }
+        
     } else {
         companyName = 'Unknown Company';
+    }
+    console.log('^^Extracted brand name:', brandName);
+    console.log('^^Extracted company name:', companyName);
+
+    // Weird corner case that comes up. Occasionally the company name gets read completely wrong.
+    // That is obviouslt
+    // TODO: Fix the product page info extraction logic to make this corner case check unnecessary.
+    const company_comp_str = companyName.trim().toLocaleLowerCase();
+    console.log('^^ company_comp_str: ', company_comp_str);
+    if (company_comp_str === 'no' || company_comp_str === 'no.') {
+        companyName = productPageInfo.brand;
+        productPageInfo.manufacturer = companyName;
+        console.log('Weird \'No\' corner case. Changing company/manufacturer name to brand name.')
+        console.log('^^Extracted company name UPDATED:', companyName);
+        
     }
 
     console.log('Extracted company name for API call:', companyName);

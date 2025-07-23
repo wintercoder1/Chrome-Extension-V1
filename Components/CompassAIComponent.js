@@ -9,6 +9,8 @@ const CompassAIComponent = ({ companyName, brandName = null, politicalData = nul
         citationUrl: `Financial Contributions Overview for ${companyName}`
     };
 
+    console.log(`!! Now rendering component with brand name: ${brandName} and company name: ${companyName}`)
+
     // Use API data if available, otherwise use default
     const data = politicalData || defaultPoliticalData;
 

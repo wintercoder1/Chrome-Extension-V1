@@ -223,7 +223,10 @@ class TypicalProductPageParser {
     
     for (const label of manufacturerLabels) {
         console.log('PageParser: Found manufacturer label:', label.textContent);
-        
+        if (label.textContent.includes('Discontinued By Manufacturer')) {
+          console.log('   manufacturer label contained : Discontinued By Manufacturer. Not the one we are looking for.')
+          continue
+        }
         // Look for the next span element that contains the manufacturer name
         const nextSpan = label.nextElementSibling;
         if (nextSpan && nextSpan.tagName === 'SPAN' && nextSpan.textContent.trim()) {
@@ -250,7 +253,8 @@ class TypicalProductPageParser {
     const listItems = document.querySelectorAll('li');
     for (const li of listItems) {
         const liText = li.textContent;
-        if (liText.includes('Manufacturer') && liText.includes(':')) {
+        // Contains the word manufacturer but is not the field: Is Discontinued By Manufacturer
+        if (!liText.includes('Discontinued By Manufacturer') && liText.includes('Manufacturer') && liText.includes(':')) {
             console.log('PageParser: Found manufacturer in list item:', liText);
             
             // Extract manufacturer name after the colon
@@ -274,7 +278,8 @@ class TypicalProductPageParser {
         // Look for manufacturer pattern in this section
         const sectionText = detailsElement.textContent;
         const manufacturerMatch = sectionText.match(/Manufacturer\s*:?\s*([^\n\r]+)/i);
-        if (manufacturerMatch) {
+        // Contains the word manufacturer but is not the field: Is Discontinued By Manufacturer
+        if (manufacturerMatch && !manufacturerMatch.includes('Discontinued By Manufacturer')) {
             const manufacturer = manufacturerMatch[1].trim();
             console.log('PageParser: Found manufacturer in product details:', manufacturer);
             return manufacturer;
@@ -285,7 +290,7 @@ class TypicalProductPageParser {
     const rows = document.querySelectorAll('tr');
     for (const row of rows) {
         const rowText = row.textContent.toLowerCase();
-        if (rowText.includes('manufacturer')) {
+        if (rowText.includes('manufacturer') && !rowText.includes('Discontinued By Manufacturer')) {
             console.log('PageParser: Found manufacturer row:', row.textContent);
             const cells = row.querySelectorAll('td, th');
             for (let i = 0; i < cells.length; i++) {
