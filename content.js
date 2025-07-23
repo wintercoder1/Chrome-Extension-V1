@@ -228,19 +228,19 @@ class AmazonBrandTracker {
     } else {
         companyName = 'Unknown Company';
     }
-    console.log('^^Extracted brand name:', brandName);
-    console.log('^^Extracted company name:', companyName);
+    // console.log('^^Extracted brand name:', brandName);
+    // console.log('^^Extracted company name:', companyName);
 
     // Weird corner case that comes up. Occasionally the company name gets read completely wrong.
     // That is obviouslt
     // TODO: Fix the product page info extraction logic to make this corner case check unnecessary.
-    const company_comp_str = companyName.trim().toLocaleLowerCase();
-    console.log('^^ company_comp_str: ', company_comp_str);
+    // const company_comp_str = companyName.trim().toLocaleLowerCase();
+    // console.log('^^ company_comp_str: ', company_comp_str);
     if (company_comp_str === 'no' || company_comp_str === 'no.') {
         companyName = productPageInfo.brand;
         productPageInfo.manufacturer = companyName;
         console.log('Weird \'No\' corner case. Changing company/manufacturer name to brand name.')
-        console.log('^^Extracted company name UPDATED:', companyName);
+        // console.log('^^Extracted company name UPDATED:', companyName);
         
     }
 
@@ -252,7 +252,7 @@ class AmazonBrandTracker {
             // Call the Compass AI political leaning endpoint
             console.log('Political leaning data fetch initiated:');
             const politicalData = await this.networkManager.fetchPoliticalLeaning(companyName);
-            console.log('Network call complete!!! ^^^^');
+            console.log('Network call complete!!!');
             console.log('Political leaning data received:', politicalData);
             
             // Update the component with the API data
