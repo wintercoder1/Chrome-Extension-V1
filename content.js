@@ -253,13 +253,11 @@ class AmazonBrandTracker {
             console.log('Political leaning data fetch initiated:');
             const politicalData = await this.networkManager.fetchPoliticalLeaning(companyName);
             console.log('Network call complete!!!');
-            console.log('Political leaning data received:', politicalData);
+            // console.log('Political leaning data received:', politicalData);
             
             // Update the component with the API data
-            // setTimeout(() => {
             console.log('Will update component now.');
             this.displayElementManager.updateDisplayElementCompass(productPageInfo, null, politicalData);
-            // }, 25000);
             
         } catch (error) {
             console.error('Error in political leaning flow:', error);
