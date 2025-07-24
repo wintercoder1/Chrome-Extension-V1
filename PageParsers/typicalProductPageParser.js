@@ -417,7 +417,8 @@ class TypicalProductPageParser {
           () => this.extractBrandFromStoreLink(),
           () => this.extractBrandFromMetaInfo(),
           () => this.extractBrandFromProductDetails(),
-          () => this.extractBrandFromProductTitle()
+          () => this.extractBrandFromProductTitle(),
+          () => this.extractBrandFromBylineLink()
       ];
       
       for (const method of extractionMethods) {
@@ -560,6 +561,60 @@ class TypicalProductPageParser {
                       console.log('Found brand from product details:', brand);
                       return brand;
                   }
+              }
+          }
+      }
+      
+      return null;
+  }
+
+  // Method 0: Extract from byline brand link (for luxury/brand pages)
+  extractBrandFromBylineLink() {
+      console.log('Attempting to extract brand from byline link...');
+      
+      // Look for brand links in the byline area (common in luxury product pages)
+      const bylineSelectors = [
+          '#bond-byLine-desktop',
+          '.bondHeaderText',
+          '[data-csa-c-content-id="bond-byline-common"] a',
+          '.a-link-normal.bondHeaderText'
+      ];
+      
+      for (const selector of bylineSelectors) {
+          const element = document.querySelector(selector);
+          if (element) {
+              const brandText = element.textContent.trim();
+              if (brandText && brandText.length > 0) {
+                  console.log('Found brand from byline link:', brandText);
+                  return brandText;
+              }
+          }
+      }
+      
+      // Alternative: Look for any link that contains luxury brand patterns
+      const brandLinks = document.querySelectorAll('a[href*="luxury"], a[href*="brand"], a.bondHeaderText');
+      for (const link of brandLinks) {
+          const linkText = link.textContent.trim();
+          // Check if this looks like a brand name (not too long, proper case)
+          if (linkText && linkText.length > 0 && linkText.length < 50 && 
+              linkText[0] === linkText[0].toUpperCase() &&
+              !linkText.toLowerCase().includes('visit') &&
+              !linkText.toLowerCase().includes('store') &&
+              !linkText.toLowerCase().includes('shop')) {
+              console.log('Found brand from luxury brand link:', linkText);
+              return linkText;
+          }
+      }
+      
+      // Look in the bond byline section specifically
+      const bondBylineSection = document.querySelector('[data-feature-name="bondByLine"]');
+      if (bondBylineSection) {
+          const links = bondBylineSection.querySelectorAll('a');
+          for (const link of links) {
+              const linkText = link.textContent.trim();
+              if (linkText && linkText.length > 0 && linkText.length < 50) {
+                  console.log('Found brand from bond byline section:', linkText);
+                  return linkText;
               }
           }
       }

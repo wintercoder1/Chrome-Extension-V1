@@ -3,6 +3,7 @@
 class NetworkManager {
   constructor() {
     this.baseUrl = 'https://compass-ai-internal-api.com';
+    // this.baseUrl = 'http://localhost:8000';
     this.cache = new Map(); // Simple in-memory cache
     this.requestTimeout = 55000; // 10 seconds timeout
   }
@@ -122,17 +123,12 @@ class NetworkManager {
             const rating = data.rating ? data.rating.toString() : (data.response.rating ? data.response.rating.toString() : 'N/A')
             const context = data.context ? data.context : data.response.context 
             const topic = data.topic ? data.topic : data.response.topic
-            const created_with_financial_contributions_info = data.created_with_financial_contributions_info ? data.created_with_financial_contributions_info : data.response.created_with_financial_contributions_info 
+            const created_with_financial_contributions_info = (data && data.created_with_financial_contributions_info) ? 
+                                                                data.created_with_financial_contributions_info : 
+                                                                (data && data.response && data.created_with_financial_contributions_info) ? 
+                                                                        data.response.created_with_financial_contributions_info : false
             const timestamp = data.timestamp ? data.timestamp : data.response.timestamp
             const debug = data.debug ? data.debug : data.response.debug
-            // console.log('response: ', data.response)
-            // console.log('context: ', context)
-            // console.log('lean: ', lean)
-            // console.log('rating: ', rating)
-            // console.log('topic: ', rating)
-            // console.log('created_with_financial_contributions_info', created_with_financial_contributions_info)
-            // console.log('timestamp ', timestamp)
-            // console.log('debug ', debug)
 
             // Transform the API response to match our component's expected format
             return {

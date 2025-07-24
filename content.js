@@ -234,7 +234,7 @@ class AmazonBrandTracker {
     // Weird corner case that comes up. Occasionally the company name gets read completely wrong.
     // That is obviouslt
     // TODO: Fix the product page info extraction logic to make this corner case check unnecessary.
-    // const company_comp_str = companyName.trim().toLocaleLowerCase();
+    const company_comp_str = companyName.trim().toLocaleLowerCase();
     // console.log('^^ company_comp_str: ', company_comp_str);
     if (company_comp_str === 'no' || company_comp_str === 'no.') {
         companyName = productPageInfo.brand;

@@ -20,7 +20,8 @@ const CompassAIComponent = ({ companyName, brandName = null, politicalData = nul
     // Prepend text that will inform the user that the company owns that brand. 
     // This will be worth making very upfront to users to avoid confusion.
     let description_context = data.description;
-    if (brandName != null && brandName != 'Unknown Brand'&& brandName != 'No' && brandName != 'No.') {
+    if (brandName != null && brandName.trim().toLowerCase() !== companyName.trim().toLowerCase() && 
+        brandName != 'Unknown Brand' && brandName != 'No' && brandName != 'No.') {
         const prepend_text = `${brandName} is owned by ${companyName}. `
         description_context = prepend_text + description_context;
         console.log(`Will prepend text ${prepend_text}`)
