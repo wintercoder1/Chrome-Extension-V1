@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Tilt AI - Amazon shopping assistant. What way does the brand tilt?",
+  "name": "Tilt AI - What way does the brand tilt? Amazon shopping assistant.",
   "version": "1.0.1",
   "description": "Displays the political tilt of companies on Amazon. Allows usersto only support companies that allign with their moral compass.",
   
