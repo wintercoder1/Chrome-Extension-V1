@@ -81,26 +81,40 @@ const CompassAIComponent = ({ companyName, brandName = null, politicalData = nul
                 React.createElement('p', { className: 'political-description' }, description_context)
             ),
             
-            React.createElement('div', { className: 'citations-section' },
+            // Conditionally render citation section.
+            // For now only focuses on financial contributions.
+            // TODO: Consider showing wikipedia citation but only when link to wikipedia is valid.    
+            politicalData && politicalData.created_with_financial_contributions_info === true
+                ? React.createElement('div', { className: 'citations-section' },
                 React.createElement('h4', { className: 'citations-header' }, 'Citations:'),
-                // Conditionally render financial contributions citation
-                politicalData && politicalData.created_with_financial_contributions_info === true
-                    ? React.createElement('a', {
-                        href: '#',
-                        className: 'citation-link',
-                        onClick: handleCitationClickFinancialContributionsOverview
-                    }, `Financial Contributions Data for ${companyName}`)
-                    : null,
-                politicalData && politicalData.created_with_financial_contributions_info === true
-                    ? React.createElement('br')
-                    : null,
-                // Wikipedia citation.
-                React.createElement('a', { 
-                    href: '#', 
+                React.createElement('a', {
+                    href: '#',
                     className: 'citation-link',
-                    onClick: handleCitationClickWikipedia
-                }, 'Wikipedia')
-            )
+                    onClick: handleCitationClickFinancialContributionsOverview
+                }, `Financial Contributions Data for ${companyName}`)
+            ) : null,
+
+            // With wikipedia section by default.
+            // React.createElement('div', { className: 'citations-section' },
+            //     React.createElement('h4', { className: 'citations-header' }, 'Citations:'),
+            //     // Conditionally render financial contributions citation
+            //     politicalData && politicalData.created_with_financial_contributions_info === true
+            //         ? React.createElement('a', {
+            //             href: '#',
+            //             className: 'citation-link',
+            //             onClick: handleCitationClickFinancialContributionsOverview
+            //         }, `Financial Contributions Data for ${companyName}`)
+            //         : null,
+            //     politicalData && politicalData.created_with_financial_contributions_info === true
+            //         ? React.createElement('br')
+            //         : null,
+            //     // Wikipedia citation.
+            //     React.createElement('a', { 
+            //         href: '#', 
+            //         className: 'citation-link',
+            //         onClick: handleCitationClickWikipedia
+            //     }, 'Wikipedia')
+            // )
             
         )
     );

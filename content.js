@@ -10,6 +10,7 @@ class AmazonBrandTracker {
     this.pageParser = new TypicalProductPageParser();
     this.bookPageParser= new BookPageParser();
     this.networkManager = new NetworkManager();
+    this.rateLimitManager = new RateLimitManager();
 
     // Set global reference so manual refresh can find this instance
     globalAmazonBrandTracker = this;
@@ -70,53 +71,7 @@ class AmazonBrandTracker {
     }
   }
 
-  /* This method ties together the methods from the other modules:
-     DisplayElementFactory, PageParser, and NetworkManager.
-  */
-//     async classifyWebpageExtractInfoAndUpdateDisplay () {
-
-//         // First we create the component. It will intially be in its laoding state.
-//         console.log('Now displaying extension component...');
-//         const displayInfo = {'type': 'product_with_manufacturer'};
-//         const loadingElement = this.displayElementManager.createDisplayElementWithComponent(displayInfo, null, true);
-//         loadingElement.classList.add('loading');
-//         this.displayElementManager.insertDisplayElement(loadingElement);
-        
-//         // Classify the webpage parse it and return meta data describing what is in the product page.
-//         const brandInfo = this.classifyProductAndExtractBrandInfo();
-    
-//         // If found on Amazon product page of any type.
-//         // When the company that owns the brand is found directly on the web page.
-//         if (brandInfo) {
-//           setTimeout(() => {
-//                 this.displayElementManager.updateDisplayElement(brandInfo, null);
-//             }, 500);
-//             return;
-//         }
-
-//         // Finally if all we got is the brand but no corresponding company behind it we call our own API to 
-//         // match the brand with the company that owns it.
-//         console.log('Processing regular product page...');
-//         const ownerInfo = await this.networkManager.fetchBrandOwner(brandInfo);
-//         console.log(`ownerInfo: ${ownerInfo}`);
-//         console.log(`brand_name: ${ownerInfo.brand_name}`);
-//         console.log(`owning_company_name: ${ownerInfo.owning_company_name}`);
-        
-//         // Error case
-//         if (!brandInfo) {
-//           console.log('No brand info found, showing error message...');
-//           setTimeout(() => {
-//               this.displayElementManager.updateDisplayElement('no-info-found', null);
-//           }, 500);
-//           return;
-//         }
-
-//         // Final case. Update with results of netowrk call.
-//         // Update the UI compmenet with the newtork fetching company owner information.
-//         this.displayElementManager.updateDisplayElement(brandInfo, ownerInfo); 
-//     }
-
-    classifyProductAndExtractBrandInfo() {
+  classifyProductAndExtractBrandInfo() {
       console.log('Starting product classification and brand extraction...');
       
       // First check if this is a book page (books have different structure)
@@ -186,7 +141,234 @@ class AmazonBrandTracker {
   ///
   //
   //
+//   async classifyWebpageExtractInfoAndUpdateDisplayWithCompassComponent() {
+//     // First we create the component. It will initially be in its loading state.
+//     console.log('Now displaying extension component...');
+//     const displayInfo = {'type': 'product_with_manufacturer'};
+//     const loadingElement = this.displayElementManager.createDisplayElementWithComponentCompass(displayInfo, null, true);
+//     loadingElement.classList.add('loading');
+//     this.displayElementManager.insertDisplayElement(loadingElement);
+    
+//     // Classify the webpage and extract brand info
+//     const productPageInfo = this.classifyProductAndExtractBrandInfo();
+    
+//     // Logic to take the correct brand and manufacturer info from the product info dict.
+//     let companyName = '';
+//     let brandName = null;
+//     // Extract the actual company name from brandInfo object
+//     if (productPageInfo === 'no-info-found') {
+//         companyName = 'Unknown Company';
+//     } else if (productPageInfo && productPageInfo.type === 'product_with_manufacturer' && 
+//                 productPageInfo.brand !== productPageInfo.manufacturer) {
+//         // This is one of the most common cases likely. 
+//         // The product will have a brand, but the contribution info will be from the parent company.
+//         brandName = productPageInfo.brand;
+//         companyName = productPageInfo.manufacturer;
+//     } else if (productPageInfo && productPageInfo.type === 'book') {
+//         companyName = productPageInfo.publisher || 'Unknown Publisher';
+//     } else if (productPageInfo && productPageInfo.type === 'product_with_manufacturer' && productPageInfo.manufacturer !== 'information...') {
+//         companyName = productPageInfo.manufacturer || productPageInfo.brand || 'Unknown Company';
+//     } else if (ownerInfo && ownerInfo.owning_company_name && ownerInfo.owning_company_name !== productPageInfo) {
+//         companyName = ownerInfo.owning_company_name;
+//     } else if (productPageInfo && typeof productPageInfo === 'string') {
+//         // If productPageInfo is already a string
+//         companyName = productPageInfo;
+//     } else if (productPageInfo && productPageInfo.brand) {
+//         // If productPageInfo is an object with a brand property
+//         companyName = productPageInfo.brand;
+//     } else if (productPageInfo && productPageInfo.manufacturer) {
+//         // If productPageInfo is an object with a manufacturer property
+//         companyName = productPageInfo.manufacturer;
+        
+//     } else {
+//         companyName = 'Unknown Company';
+//     }
+//     // console.log('^^Extracted brand name:', brandName);
+//     // console.log('^^Extracted company name:', companyName);
+
+//     // Weird corner case that comes up. Occasionally the company name gets read completely wrong.
+//     // That is obviouslt
+//     // TODO: Fix the product page info extraction logic to make this corner case check unnecessary.
+//     const company_comp_str = companyName.trim().toLocaleLowerCase();
+//     // console.log('^^ company_comp_str: ', company_comp_str);
+//     if (company_comp_str === 'no' || company_comp_str === 'no.') {
+//         companyName = productPageInfo.brand;
+//         productPageInfo.manufacturer = companyName;
+//         console.log('Weird \'No\' corner case. Changing company/manufacturer name to brand name.')
+//         // console.log('^^Extracted company name UPDATED:', companyName);
+        
+//     }
+
+//     console.log('Extracted company name for API call:', companyName);
+
+//     // If we have a valid company name, fetch political leaning data
+//     if (companyName && companyName !== 'Unknown Company' && companyName !== 'no-info-found') {
+//         try {
+//             // Call the Compass AI political leaning endpoint
+//             console.log('Political leaning data fetch initiated:');
+//             const politicalData = await this.networkManager.fetchPoliticalLeaning(companyName);
+//             console.log('Network call complete!!!');
+//             // console.log('Political leaning data received:', politicalData);
+            
+//             // Update the component with the API data
+//             console.log('Will update component now.');
+//             this.displayElementManager.updateDisplayElementCompass(productPageInfo, null, politicalData);
+            
+//         } catch (error) {
+//             console.error('Error in political leaning flow:', error);
+//             // Fallback to showing basic company info
+//             setTimeout(() => {
+//                 this.displayElementManager.updateDisplayElementCompass(companyName, null, null);
+//             }, 800);
+//         }
+//     } else {
+//         // If no valid company name, show error state
+//         console.log('No valid company name found, showing error state');
+//         setTimeout(() => {
+//             this.displayElementManager.updateDisplayElementCompass('no-info-found', null, null);
+//         }, 800);
+//     }
+//   }
+
+//   async classifyWebpageExtractInfoAndUpdateDisplayWithCompassComponent() {
+//     // First check if user has exceeded daily limit
+//     const hasExceededLimit = await this.rateLimitManager.hasExceededLimit();
+    
+//     if (hasExceededLimit) {
+//       console.log('⚠️ RATE LIMIT: User has exceeded daily limit, showing paygate');
+      
+//       // Create and show the paygate component immediately
+//       const displayInfo = {'type': 'paygate'};
+//       const paygateElement = this.displayElementManager.createDisplayElementWithComponentCompass(displayInfo, null, true);
+//       paygateElement.classList.add('paygate');
+//       this.displayElementManager.insertDisplayElement(paygateElement);
+      
+//       // Update with paygate UI
+//       setTimeout(() => {
+//         this.displayElementManager.updateDisplayElementWithPayGateCompass();
+//       }, 300);
+      
+//       return;
+//     }
+
+//     // Show remaining requests for debugging (remove in production)
+//     const remainingRequests = await this.rateLimitManager.getRemainingRequests();
+//     console.log(`📊 RATE LIMIT: ${remainingRequests} requests remaining today`);
+
+//     // First we create the component. It will initially be in its loading state.
+//     console.log('Now displaying extension component...');
+//     const displayInfo = {'type': 'product_with_manufacturer'};
+//     const loadingElement = this.displayElementManager.createDisplayElementWithComponentCompass(displayInfo, null, true);
+//     loadingElement.classList.add('loading');
+//     this.displayElementManager.insertDisplayElement(loadingElement);
+    
+//     // Classify the webpage and extract brand info
+//     const productPageInfo = this.classifyProductAndExtractBrandInfo();
+    
+//     // Logic to take the correct brand and manufacturer info from the product info dict.
+//     let companyName = '';
+//     let brandName = null;
+    
+//     // ... (keep all the existing company name extraction logic unchanged)
+//     if (productPageInfo === 'no-info-found') {
+//         companyName = 'Unknown Company';
+//     } else if (productPageInfo && productPageInfo.type === 'product_with_manufacturer' && 
+//                 productPageInfo.brand !== productPageInfo.manufacturer) {
+//         brandName = productPageInfo.brand;
+//         companyName = productPageInfo.manufacturer;
+//     } else if (productPageInfo && productPageInfo.type === 'book') {
+//         companyName = productPageInfo.publisher || 'Unknown Publisher';
+//     } else if (productPageInfo && productPageInfo.type === 'product_with_manufacturer' && productPageInfo.manufacturer !== 'information...') {
+//         companyName = productPageInfo.manufacturer || productPageInfo.brand || 'Unknown Company';
+//     } else if (ownerInfo && ownerInfo.owning_company_name && ownerInfo.owning_company_name !== productPageInfo) {
+//         companyName = ownerInfo.owning_company_name;
+//     } else if (productPageInfo && typeof productPageInfo === 'string') {
+//         companyName = productPageInfo;
+//     } else if (productPageInfo && productPageInfo.brand) {
+//         companyName = productPageInfo.brand;
+//     } else if (productPageInfo && productPageInfo.manufacturer) {
+//         companyName = productPageInfo.manufacturer;
+//     } else {
+//         companyName = 'Unknown Company';
+//     }
+
+//     const company_comp_str = companyName.trim().toLocaleLowerCase();
+//     if (company_comp_str === 'no' || company_comp_str === 'no.') {
+//         companyName = productPageInfo.brand;
+//         productPageInfo.manufacturer = companyName;
+//         console.log('Weird \'No\' corner case. Changing company/manufacturer name to brand name.');
+//     }
+
+//     console.log('Extracted company name for API call:', companyName);
+
+//     // If we have a valid company name, fetch political leaning data
+//     if (companyName && companyName !== 'Unknown Company' && companyName !== 'no-info-found') {
+//         try {
+//             console.log('Political leaning data fetch initiated:');
+//             const politicalData = await this.networkManager.fetchPoliticalLeaning(companyName);
+//             console.log('Network call complete!!!');
+            
+//             // 🎯 CRITICAL: Increment request counter ONLY on successful API response
+//             const newRequestCount = await this.rateLimitManager.incrementRequestCount();
+//             console.log(`✅ RATE LIMIT: Request completed successfully (${newRequestCount}/10)`);
+            
+//             // Check if this was the last free request
+//             if (newRequestCount >= this.rateLimitManager.DAILY_LIMIT) {
+//                 console.log('🚨 RATE LIMIT: User has reached daily limit after this request');
+//                 // You could show a notification here about reaching the limit
+//             }
+            
+//             // Update the component with the API data
+//             console.log('Will update component now.');
+//             this.displayElementManager.updateDisplayElementCompass(productPageInfo, null, politicalData);
+            
+//         } catch (error) {
+//             console.error('Error in political leaning flow:', error);
+//             // NOTE: We don't increment counter on API failures
+//             console.log('⚠️ RATE LIMIT: Request failed, not incrementing counter');
+            
+//             // Fallback to showing basic company info
+//             setTimeout(() => {
+//                 this.displayElementManager.updateDisplayElementCompass(companyName, null, null);
+//             }, 800);
+//         }
+//     } else {
+//         // If no valid company name, show error state (don't increment counter)
+//         console.log('No valid company name found, showing error state');
+//         console.log('⚠️ RATE LIMIT: No valid company, not incrementing counter');
+//         setTimeout(() => {
+//             this.displayElementManager.updateDisplayElementCompass('no-info-found', null, null);
+//         }, 800);
+//     }
+//   }
+
   async classifyWebpageExtractInfoAndUpdateDisplayWithCompassComponent() {
+    // First check if user has exceeded daily limit
+    const hasExceededLimit = await this.rateLimitManager.hasExceededLimit();
+    
+    // if (hasExceededLimit) {
+    //   console.log('⚠️ RATE LIMIT: User has exceeded daily limit, showing paygate');
+      
+    //   // Create and show the paygate component immediately
+    //   const displayInfo = {'type': 'paygate'};
+    //   const paygateElement = this.displayElementManager.createDisplayElementWithComponentCompass(displayInfo, null, true);
+    //   paygateElement.classList.add('paygate');
+    //   this.displayElementManager.insertDisplayElement(paygateElement);
+      
+    //   // Update with paygate UI
+    // //   setTimeout(() => {
+    //     console.log('Updating to paygate UI');
+    //     this.displayElementManager.updateDisplayElementWithPayGateCompass();
+    //     // this.displayElementManager.updateDisplayElementWithPayGateCompass();
+    // //   }, 300);
+      
+    //   return;
+    // }
+
+    // Show remaining requests for debugging (remove in production)
+    const remainingRequests = await this.rateLimitManager.getRemainingRequests();
+    console.log(`📊 RATE LIMIT: ${remainingRequests} requests remaining today`);
+
     // First we create the component. It will initially be in its loading state.
     console.log('Now displaying extension component...');
     const displayInfo = {'type': 'product_with_manufacturer'};
@@ -200,13 +382,12 @@ class AmazonBrandTracker {
     // Logic to take the correct brand and manufacturer info from the product info dict.
     let companyName = '';
     let brandName = null;
-    // Extract the actual company name from brandInfo object
+    
+    // ... (keep all the existing company name extraction logic unchanged)
     if (productPageInfo === 'no-info-found') {
         companyName = 'Unknown Company';
     } else if (productPageInfo && productPageInfo.type === 'product_with_manufacturer' && 
                 productPageInfo.brand !== productPageInfo.manufacturer) {
-        // This is one of the most common cases likely. 
-        // The product will have a brand, but the contribution info will be from the parent company.
         brandName = productPageInfo.brand;
         companyName = productPageInfo.manufacturer;
     } else if (productPageInfo && productPageInfo.type === 'book') {
@@ -216,32 +397,20 @@ class AmazonBrandTracker {
     } else if (ownerInfo && ownerInfo.owning_company_name && ownerInfo.owning_company_name !== productPageInfo) {
         companyName = ownerInfo.owning_company_name;
     } else if (productPageInfo && typeof productPageInfo === 'string') {
-        // If productPageInfo is already a string
         companyName = productPageInfo;
     } else if (productPageInfo && productPageInfo.brand) {
-        // If productPageInfo is an object with a brand property
         companyName = productPageInfo.brand;
     } else if (productPageInfo && productPageInfo.manufacturer) {
-        // If productPageInfo is an object with a manufacturer property
         companyName = productPageInfo.manufacturer;
-        
     } else {
         companyName = 'Unknown Company';
     }
-    // console.log('^^Extracted brand name:', brandName);
-    // console.log('^^Extracted company name:', companyName);
 
-    // Weird corner case that comes up. Occasionally the company name gets read completely wrong.
-    // That is obviouslt
-    // TODO: Fix the product page info extraction logic to make this corner case check unnecessary.
     const company_comp_str = companyName.trim().toLocaleLowerCase();
-    // console.log('^^ company_comp_str: ', company_comp_str);
     if (company_comp_str === 'no' || company_comp_str === 'no.') {
         companyName = productPageInfo.brand;
         productPageInfo.manufacturer = companyName;
-        console.log('Weird \'No\' corner case. Changing company/manufacturer name to brand name.')
-        // console.log('^^Extracted company name UPDATED:', companyName);
-        
+        console.log('Weird \'No\' corner case. Changing company/manufacturer name to brand name.');
     }
 
     console.log('Extracted company name for API call:', companyName);
@@ -249,11 +418,24 @@ class AmazonBrandTracker {
     // If we have a valid company name, fetch political leaning data
     if (companyName && companyName !== 'Unknown Company' && companyName !== 'no-info-found') {
         try {
-            // Call the Compass AI political leaning endpoint
             console.log('Political leaning data fetch initiated:');
             const politicalData = await this.networkManager.fetchPoliticalLeaning(companyName);
             console.log('Network call complete!!!');
-            // console.log('Political leaning data received:', politicalData);
+            
+            // 🎯 CRITICAL: Increment request counter ONLY on successful API response
+            // But only if user is not a pro user
+            if (!this.rateLimitManager.isProUser()) {
+                const newRequestCount = await this.rateLimitManager.incrementRequestCount();
+                console.log(`✅ RATE LIMIT: Request completed successfully (${newRequestCount}/10)`);
+                
+                // Check if this was the last free request
+                if (newRequestCount >= this.rateLimitManager.DAILY_LIMIT) {
+                    console.log('🚨 RATE LIMIT: User has reached daily limit after this request');
+                    // You could show a notification here about reaching the limit
+                }
+            } else {
+                console.log('✅ PRO USER: Request completed, no rate limit applied');
+            }
             
             // Update the component with the API data
             console.log('Will update component now.');
@@ -261,20 +443,23 @@ class AmazonBrandTracker {
             
         } catch (error) {
             console.error('Error in political leaning flow:', error);
+            // NOTE: We don't increment counter on API failures
+            console.log('⚠️ RATE LIMIT: Request failed, not incrementing counter');
+            
             // Fallback to showing basic company info
             setTimeout(() => {
                 this.displayElementManager.updateDisplayElementCompass(companyName, null, null);
             }, 800);
         }
     } else {
-        // If no valid company name, show error state
+        // If no valid company name, show error state (don't increment counter)
         console.log('No valid company name found, showing error state');
+        console.log('⚠️ RATE LIMIT: No valid company, not incrementing counter');
         setTimeout(() => {
             this.displayElementManager.updateDisplayElementCompass('no-info-found', null, null);
         }, 800);
     }
   }
-
 
   // Also add this debug method to test the DisplayElementManager
   testDisplayElementManager() {
@@ -357,7 +542,15 @@ class AmazonBrandTracker {
   }
 
   
+  // Add utility methods for rate limit management
+  async getRateLimitStatus() {
+    return await this.rateLimitManager.getUsageStats();
+  }
 
+  async resetRateLimit() {
+    await this.rateLimitManager.resetUsageData();
+    console.log('Rate limit reset by user/admin');
+  }
 }
 
 // 4. Add a debug function to test manual refresh from console
@@ -367,6 +560,48 @@ window.testManualRefresh = function() {
     handleManualRefresh()
         .then(result => console.log('✅ CONSOLE DEBUG: Result:', result))
         .catch(error => console.error('💥 CONSOLE DEBUG: Error:', error));
+};
+
+// // Console debugging functions
+// window.checkRateLimit = async function() {
+//     if (globalAmazonBrandTracker && globalAmazonBrandTracker.rateLimitManager) {
+//         const stats = await globalAmazonBrandTracker.getRateLimitStatus();
+//         console.table(stats);
+//         return stats;
+//     } else {
+//         console.log('Rate limit manager not available');
+//         return null;
+//     }
+// };
+
+// window.resetRateLimit = async function() {
+//     if (globalAmazonBrandTracker) {
+//         await globalAmazonBrandTracker.resetRateLimit();
+//         console.log('✅ Rate limit reset successfully');
+//     } else {
+//         console.log('❌ AmazonBrandTracker not available');
+//     }
+// };
+
+// Console debugging functions
+window.checkRateLimit = async function() {
+    if (globalAmazonBrandTracker && globalAmazonBrandTracker.rateLimitManager) {
+        const stats = await globalAmazonBrandTracker.getRateLimitStatus();
+        console.table(stats);
+        return stats;
+    } else {
+        console.log('Rate limit manager not available');
+        return null;
+    }
+};
+
+window.resetRateLimit = async function() {
+    if (globalAmazonBrandTracker) {
+        await globalAmazonBrandTracker.resetRateLimit();
+        console.log('✅ Rate limit reset successfully');
+    } else {
+        console.log('❌ AmazonBrandTracker not available');
+    }
 };
 
 // Initialize the tracker

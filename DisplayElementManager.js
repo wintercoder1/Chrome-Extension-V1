@@ -651,6 +651,314 @@ class  DisplayElementManager {
         throw new Error('All last resort insertion strategies failed');
     }
 
+    // Add this method to the DisplayElementManager class.
+    // updateDisplayElementWithPayGateCompass() {
+    //     if (!this.displayElement) {
+    //         console.log('Tried to update display element with paygate, but could not find a display element to update.');
+    //         return;
+    //     }
+
+    //     console.log('🚧 PAYGATE: Updating component to paygate state');
+
+    //     // Check if user is already a pro user (you'll need to implement this storage check)
+    //     const isProUser = this.checkProUserStatus();
+        
+    //     // Create the paygate overlay content
+    //     const paygateOverlay = document.createElement('div');
+    //     paygateOverlay.className = 'tilt-ai-paygate-overlay';
+        
+    //     // Create the blurred background content (showing sample company info)
+    //     const blurredContent = document.createElement('div');
+    //     blurredContent.className = 'tilt-ai-blurred-content';
+    //     blurredContent.innerHTML = `
+    //         <div class="tilt-ai-header">
+    //             <span class="brand-owner-icon">🔍</span>
+    //             <span class="brand-owner-text">Apple Inc. - Political Analysis</span>
+    //         </div>
+    //         <div class="tilt-ai-sample-content">
+    //             <div class="political-lean">Political Lean: Slightly Liberal</div>
+    //             <div class="contribution-info">Political Contributions: $2.3M (2020-2024)</div>
+    //             <div class="score">Tilt Score: 6.2/10</div>
+    //         </div>
+    //     `;
+
+    //     // Create the paygate modal
+    //     const paygateModal = document.createElement('div');
+    //     paygateModal.className = 'tilt-ai-paygate-modal';
+        
+    //     if (isProUser) {
+    //         // Show login prompt for existing pro users
+    //         paygateModal.innerHTML = `
+    //             <div class="paygate-content">
+    //                 <div class="paygate-icon">🔐</div>
+    //                 <h3>Welcome Back!</h3>
+    //                 <p>Please log in to continue using Tilt AI Premium</p>
+    //                 <button class="tilt-ai-login-btn" onclick="this.handleLogin()">
+    //                     Log In to Premium
+    //                 </button>
+    //                 <div class="paygate-footer">
+    //                     <small>Already have an account? Just log in to resume access.</small>
+    //                 </div>
+    //             </div>
+    //         `;
+    //     } else {
+    //         // Show upgrade prompt for free users
+    //         paygateModal.innerHTML = `
+    //             <div class="paygate-content">
+    //                 <div class="paygate-icon">⭐</div>
+    //                 <h3>Upgrade to Tilt AI Pro</h3>
+    //                 <p>You've reached your daily limit of <strong>10 free</strong> company analyses.</p>
+    //                 <div class="paygate-features">
+    //                     <div class="feature">✓ Unlimited company analyses</div>
+    //                     <div class="feature">✓ Detailed political contribution data</div>
+    //                     <div class="feature">✓ Historical trend analysis</div>
+    //                     <div class="feature">✓ Priority customer support</div>
+    //                 </div>
+    //                 <div class="paygate-pricing">
+    //                     <span class="price">$4.99/month</span>
+    //                     <span class="price-note">Cancel anytime</span>
+    //                 </div>
+    //                 <button class="tilt-ai-upgrade-btn" onclick="this.handleUpgrade()">
+    //                     Upgrade to Pro
+    //                 </button>
+    //                 <div class="paygate-footer">
+    //                     <small>Limit resets tomorrow at midnight</small>
+    //                 </div>
+    //             </div>
+    //         `;
+    //     }
+
+    //     // Assemble the paygate overlay
+    //     paygateOverlay.appendChild(blurredContent);
+    //     paygateOverlay.appendChild(paygateModal);
+
+    //     // Clear the existing display element and add paygate
+    //     this.displayElement.innerHTML = '';
+    //     this.displayElement.appendChild(paygateOverlay);
+        
+    //     // Add paygate class to the main container
+    //     this.displayElement.classList.add('paygate-active');
+    //     this.displayElement.classList.remove('loading');
+
+    //     console.log('🚧 PAYGATE: Paygate overlay created and inserted');
+    // }
+    // updateDisplayElementWithPayGateCompass() {
+    //     if (!this.displayElement) {
+    //         console.log('Tried to update display element with paygate, but could not find a display element to update.');
+    //         return;
+    //     }
+
+    //     console.log('🚧 PAYGATE: Updating component to paygate state');
+
+    //     // Check if user is already a pro user
+    //     const isProUser = this.checkProUserStatus();
+        
+    //     // Create the paygate component using React (same pattern as normal component)
+    //     if (!window.CompassAIComponent) {
+    //         console.error('CompassAIComponent is not loaded! Falling back to HTML paygate.');
+    //         this.createHTMLPaygate(isProUser);
+    //         return;
+    //     }
+        
+    //     // Create React paygate component
+    //     const paygateComponent = React.createElement(window.CompassAIComponent, {
+    //         companyName: 'Rate Limit Reached',
+    //         brandName: null,
+    //         politicalData: null,
+    //         isLoading: false,
+    //         isPaygate: true,  // Special flag for paygate state
+    //         isProUser: isProUser,
+    //         onUpgrade: () => this.handleUpgrade(),
+    //         onLogin: () => this.handleLogin()
+    //     });
+        
+    //     // Render the React paygate component into the existing display element
+    //     ReactDOM.render(paygateComponent, this.displayElement);
+        
+    //     // Add paygate class to the main container for any additional styling
+    //     this.displayElement.classList.add('paygate-active');
+    //     this.displayElement.classList.remove('loading');
+
+    //     console.log('🚧 PAYGATE: React paygate component rendered in-place');
+    // }
+    updateDisplayElementWithPayGateCompass() {
+        if (!this.displayElement) {
+            console.log('Tried to update display element with paygate, but could not find a display element to update.');
+            return;
+        }
+
+        console.log('🚧 PAYGATE: Updating component to paygate state');
+
+        // Check if user is already a pro user
+        const isProUser = this.checkProUserStatus();
+        
+        // Create the paygate overlay content (same visual design as first implementation)
+        const paygateOverlay = document.createElement('div');
+        paygateOverlay.className = 'tilt-ai-paygate-overlay';
+        
+        // Create the blurred background content (showing sample company info)
+        const blurredContent = document.createElement('div');
+        blurredContent.className = 'tilt-ai-blurred-content';
+        blurredContent.innerHTML = `
+            <div class="tilt-ai-header">
+                <span class="brand-owner-icon">🔍</span>
+                <span class="brand-owner-text">Apple Inc. - Political Analysis</span>
+            </div>
+            <div class="tilt-ai-sample-content">
+                <div class="political-lean">Political Lean: Slightly Liberal</div>
+                <div class="contribution-info">Political Contributions: $2.3M (2020-2024)</div>
+                <div class="score">Tilt Score: 6.2/10</div>
+            </div>
+        `;
+
+        // Create the paygate modal
+        const paygateModal = document.createElement('div');
+        paygateModal.className = 'tilt-ai-paygate-modal';
+        
+        if (isProUser) {
+            // Show login prompt for existing pro users
+            paygateModal.innerHTML = `
+                <div class="paygate-content">
+                    <div class="paygate-icon">🔐</div>
+                    <h3>Welcome Back!</h3>
+                    <p>Please log in to continue using Tilt AI Premium</p>
+                    <button class="tilt-ai-login-btn" onclick="globalAmazonBrandTracker.displayElementManager.handleLogin()">
+                        Log In to Premium
+                    </button>
+                    <div class="paygate-footer">
+                        <small>Already have an account? Just log in to resume access.</small>
+                    </div>
+                </div>
+            `;
+        } else {
+            // Show upgrade prompt for free users
+            paygateModal.innerHTML = `
+                <div class="paygate-content">
+                    <div class="paygate-icon">⭐</div>
+                    <h3>Upgrade to Tilt AI Pro</h3>
+                    <p>You've reached your daily limit of <strong>10 free</strong> company analyses.</p>
+                    <div class="paygate-features">
+                        <div class="feature">✓ Unlimited company analyses</div>
+                        <div class="feature">✓ Detailed political contribution data</div>
+                        <div class="feature">✓ Historical trend analysis</div>
+                        <div class="feature">✓ Priority customer support</div>
+                    </div>
+                    <div class="paygate-pricing">
+                        <span class="price">$4.99/month</span>
+                        <span class="price-note">Cancel anytime</span>
+                    </div>
+                    <button class="tilt-ai-upgrade-btn" onclick="globalAmazonBrandTracker.displayElementManager.handleUpgrade()">
+                        Upgrade to Pro
+                    </button>
+                    <div class="paygate-footer">
+                        <small>Limit resets tomorrow at midnight</small>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Assemble the paygate overlay (same as first implementation)
+        paygateOverlay.appendChild(blurredContent);
+        paygateOverlay.appendChild(paygateModal);
+
+        // Clear the existing display element and add paygate (in-place insertion)
+        this.displayElement.innerHTML = '';
+        this.displayElement.appendChild(paygateOverlay);
+        
+        // Add paygate class to the main container
+        this.displayElement.classList.add('paygate-active');
+        this.displayElement.classList.remove('loading');
+
+        console.log('🚧 PAYGATE: Paygate overlay created and inserted in-place');
+    }
+
+    // Helper method to check if user is a pro user
+    checkProUserStatus() {
+        try {
+            // This should check your backend/storage for pro user status
+            // For now, checking localStorage as a simple implementation
+            const proStatus = localStorage.getItem('tilt_ai_pro_status');
+            const hasProAccount = localStorage.getItem('tilt_ai_has_account');
+            
+            // Return true if user has previously purchased but needs to log in
+            return proStatus === 'purchased' || hasProAccount === 'true';
+        } catch (error) {
+            console.error('Error checking pro user status:', error);
+            return false;
+        }
+    }
+
+    // Handle upgrade button click
+    handleUpgrade() {
+        console.log('🛒 PAYGATE: Upgrade button clicked');
+        
+        // You can integrate with Stripe, PayPal, or your payment processor here
+        // For now, just open a new tab to your pricing page
+        const upgradeUrl = 'https://your-website.com/upgrade'; // Replace with your actual URL
+        window.open(upgradeUrl, '_blank');
+        
+        // Optionally track the conversion attempt
+        this.trackConversionAttempt('upgrade_clicked');
+    }
+
+    // Handle login button click  
+    handleLogin() {
+        console.log('🔐 PAYGATE: Login button clicked');
+        
+        // Open your login/authentication flow
+        const loginUrl = 'https://your-website.com/login'; // Replace with your actual URL
+        window.open(loginUrl, '_blank');
+        
+        // Optionally, you could implement a popup login flow instead
+        this.trackConversionAttempt('login_clicked');
+    }
+
+    // Track conversion attempts for analytics
+    trackConversionAttempt(action) {
+        try {
+            // You can integrate with Google Analytics, Mixpanel, etc.
+            console.log(`📊 ANALYTICS: ${action} tracked`);
+            
+            // Example with Google Analytics (if you have it loaded)
+            if (typeof gtag !== 'undefined') {
+                gtag('event', action, {
+                    event_category: 'paygate',
+                    event_label: 'rate_limit_reached'
+                });
+            }
+        } catch (error) {
+            console.error('Error tracking conversion:', error);
+        }
+    }
+
+    // Method to remove paygate and restore normal functionality (call after successful login/upgrade)
+    removePaygateAndRestore() {
+        console.log('✅ PAYGATE: Removing paygate, user has premium access');
+        
+        if (this.displayElement) {
+            this.displayElement.classList.remove('paygate-active');
+            this.displayElement.innerHTML = '';
+            
+            // Re-initialize the component with normal functionality
+            // You might want to call your main component creation method here
+            console.log('🔄 PAYGATE: Restoring normal component functionality');
+        }
+    }
+
+    // Method to set pro user status after successful purchase/login
+    setProUserStatus(isPro = true, hasAccount = true) {
+        try {
+            localStorage.setItem('tilt_ai_pro_status', isPro ? 'active' : 'free');
+            localStorage.setItem('tilt_ai_has_account', hasAccount ? 'true' : 'false');
+            
+            if (isPro) {
+                console.log('✅ PRO STATUS: User upgraded to pro, removing rate limits');
+                this.removePaygateAndRestore();
+            }
+        } catch (error) {
+            console.error('Error setting pro user status:', error);
+        }
+    }
 }
 
 // Export for use in other modules

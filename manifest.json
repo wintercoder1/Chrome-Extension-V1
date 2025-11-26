@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Tilt AI - What way does the brand tilt? Amazon shopping assistant.",
-  "version": "1.0.1",
-  "description": "Displays the political tilt of companies on Amazon. Allows usersto only support companies that allign with their moral compass.",
+  "name": "Compass AI - Amazon shopping assistant. What way does the brand tilt?",
+  "version": "1.0.4",
+  "description": "Displays the political tilt of companies on Amazon. Allows users to only support companies that allign with their moral compass.",
   
   "permissions": [
     "activeTab",
@@ -31,7 +31,7 @@
         "*://*.amazon.ca/*/dp/*",
         "*://*.amazon.ca/gp/product/*"
       ],
-      "js": ["React/react.js", "React/react-dom.js", "Util/ChromeGlobalVariablesAndMethods.js", "Util/ChromeRuntimeMessageListeners.js", "Util/OverlayPopupManager.js",  "Components/TiltAIHeader.js", "Components/CompassAIComponent.js", "PageParsers/typicalProductPageParser.js", "PageParsers/bookPageParser.js", "ComponentInsertionManager.js", "NetworkManager.js", "DisplayElementManager.js", "content.js"],
+      "js": ["React/react.js", "React/react-dom.js", "Util/ChromeGlobalVariablesAndMethods.js", "Util/ChromeRuntimeMessageListeners.js", "Util/OverlayPopupManager.js",  "Components/TiltAIHeader.js", "Components/CompassAIComponent.js", "PageParsers/typicalProductPageParser.js", "PageParsers/bookPageParser.js", "ComponentInsertionManager.js", "NetworkManager.js", "DisplayElementManager.js", "PayGate/RateLimitManager.js", "content.js"],
       "css": ["styles.css"],
       "run_at": "document_idle"
     }
@@ -39,7 +39,7 @@
   
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Tilt/Compass AI Settings"
+    "default_title": "Compass AI Settings"
   },
   "web_accessible_resources": [
     {
@@ -48,9 +48,9 @@
     }
   ],
   "icons": {
-    "16": "icons/tilt_logo@16.png",
-    "32": "icons/tilt_logo@32.png",
-    "48": "icons/tilt_logo@48.png",
-    "128": "icons/tilt_logo@128.png"
+    "16": "icons/compass_logo@16.png",
+    "32": "icons/compass_logo@32.png",
+    "48": "icons/compass_logo@48.png",
+    "128": "icons/compass_logo@128.png"
   }
 }
