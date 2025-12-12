@@ -346,29 +346,41 @@ class AmazonBrandTracker {
     // First check if user has exceeded daily limit
     const hasExceededLimit = await this.rateLimitManager.hasExceededLimit();
     
-    // if (hasExceededLimit) {
-    //   console.log('⚠️ RATE LIMIT: User has exceeded daily limit, showing paygate');
-      
-    //   // Create and show the paygate component immediately
-    //   const displayInfo = {'type': 'paygate'};
-    //   const paygateElement = this.displayElementManager.createDisplayElementWithComponentCompass(displayInfo, null, true);
-    //   paygateElement.classList.add('paygate');
-    //   this.displayElementManager.insertDisplayElement(paygateElement);
-      
-    //   // Update with paygate UI
-    // //   setTimeout(() => {
-    //     console.log('Updating to paygate UI');
-    //     this.displayElementManager.updateDisplayElementWithPayGateCompass();
-    //     // this.displayElementManager.updateDisplayElementWithPayGateCompass();
-    // //   }, 300);
-      
-    //   return;
-    // }
-
     // Show remaining requests for debugging (remove in production)
     const remainingRequests = await this.rateLimitManager.getRemainingRequests();
     console.log(`📊 RATE LIMIT: ${remainingRequests} requests remaining today`);
 
+    if (hasExceededLimit) {
+      console.log('⚠️ RATE LIMIT: User has exceeded daily limit, showing paygate');
+      
+      // Create and show the paygate component immediately
+      const displayInfo = {'type': 'paygate'};
+    //   const paygateElement = this.displayElementManager.createDisplayElementWithComponentCompass(displayInfo, null, true);
+    //   paygateElement.classList.add('paygate');
+    //   this.displayElementManager.insertDisplayElement(paygateElement);
+      // ^^^^ This is the code that actually displays on the page.
+
+      // Update with paygate UI
+    //   setTimeout(() => {
+        // console.log('Updating to paygate UI');
+        // this.displayElementManager.updateDisplayElementWithPayGateCompass();
+        // this.displayElementManager.updateDisplayElementWithPayGateCompass();
+    //   }, 300);
+      
+        // this.displayElementManager.createDisplayElementWithPaygate(brandInfo, ownerInfo = null, isLoading = false, isProUser = false)
+        // console.log('Will update component now.');
+        // this.displayElementManager.updateDisplayElementCompass(productPageInfo, null, politicalData);
+            
+
+
+        // When user hits the paywall - free user needs to upgrade
+        const paygateElement = this.displayElementManager.createDisplayElementWithPaygate(displayInfo, null, false, false);
+        this.displayElementManager.insertDisplayElement(paygateElement);
+
+      return;
+    }
+
+    
     // First we create the component. It will initially be in its loading state.
     console.log('Now displaying extension component...');
     const displayInfo = {'type': 'product_with_manufacturer'};
@@ -432,12 +444,14 @@ class AmazonBrandTracker {
                 if (newRequestCount >= this.rateLimitManager.DAILY_LIMIT) {
                     console.log('🚨 RATE LIMIT: User has reached daily limit after this request');
                     // You could show a notification here about reaching the limit
+                    // TODO: Do things here. / THIS is only the warning case NOT the out of requests case.
                 }
             } else {
                 console.log('✅ PRO USER: Request completed, no rate limit applied');
             }
             
             // Update the component with the API data
+            // THIS IS WHAT INITIALLY INSERTS THE COMPONENT ON THE PRODUCT PAGE.
             console.log('Will update component now.');
             this.displayElementManager.updateDisplayElementCompass(productPageInfo, null, politicalData);
             

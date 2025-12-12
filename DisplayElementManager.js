@@ -110,6 +110,42 @@ class  DisplayElementManager {
         
         return wrapperDiv;
     }
+    
+    createDisplayElementWithPaygate(brandInfo, ownerInfo = null, isLoading = false, isProUser = false) {
+        // Extract company name from the brandInfo object
+        let companyName = 'Loading...';
+        
+        if (!isLoading && brandInfo) {
+            const {company} = this.createMessageAndIcon(brandInfo, ownerInfo, isLoading);
+            companyName = company;
+        }
+
+        // Create a wrapper DOM element
+        const wrapperDiv = document.createElement('div');
+        wrapperDiv.className = 'brand-owner-info-container';
+        
+        // Check if component exists
+        if (!window.CompassAIWithPaygateComponent) {
+            console.error('CompassAIWithPaygateComponent is not loaded!');
+            wrapperDiv.innerHTML = '<div>Error: CompassAIWithPaygateComponent not loaded</div>';
+            return wrapperDiv;
+        }
+        
+        console.log('Creating paygate component for:', companyName, 'isProUser:', isProUser);
+        
+        // Create the React element with paygate enabled
+        const component = React.createElement(window.CompassAIWithPaygateComponent, { 
+            companyName: companyName,
+            isLoading: isLoading,
+            showPaygate: true,  // Always show paygate when using this method
+            isProUser: isProUser
+        });
+        
+        // Render the React component into the wrapper
+        ReactDOM.render(component, wrapperDiv);
+        
+        return wrapperDiv;
+    }
 
     async updateDisplayElementCompass(productPageInfo, ownerInfo, politicalData = null) {
         if (!this.displayElement) {

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Compass AI - Amazon shopping assistant. What way does the brand tilt?",
+  "name": "Compass AI - Navigate the world of online shopping.",
   "version": "1.0.4",
-  "description": "Displays the political tilt of companies on Amazon. Allows users to only support companies that allign with their moral compass.",
+  "description": "Displays additional info that tells you about the companies you are buying from on Amazon. Displays product page directly.",
   
   "permissions": [
     "activeTab",
@@ -31,7 +31,7 @@
         "*://*.amazon.ca/*/dp/*",
         "*://*.amazon.ca/gp/product/*"
       ],
-      "js": ["React/react.js", "React/react-dom.js", "Util/ChromeGlobalVariablesAndMethods.js", "Util/ChromeRuntimeMessageListeners.js", "Util/OverlayPopupManager.js",  "Components/TiltAIHeader.js", "Components/CompassAIComponent.js", "PageParsers/typicalProductPageParser.js", "PageParsers/bookPageParser.js", "ComponentInsertionManager.js", "NetworkManager.js", "DisplayElementManager.js", "PayGate/RateLimitManager.js", "content.js"],
+      "js": ["React/react.js", "React/react-dom.js", "Util/ChromeGlobalVariablesAndMethods.js", "Util/ChromeRuntimeMessageListeners.js", "Util/OverlayPopupManager.js",  "Components/TiltAIHeader.js", "Components/CompassAIComponent.js", "Components/CompassAIWithPaygateComponent.js", "PageParsers/typicalProductPageParser.js", "PageParsers/bookPageParser.js", "ComponentInsertionManager.js", "NetworkManager.js", "DisplayElementManager.js", "PayGate/RateLimitManager.js", "content.js"],
       "css": ["styles.css"],
       "run_at": "document_idle"
     }
