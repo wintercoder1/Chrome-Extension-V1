@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Compass AI - Navigate the world of online shopping.",
+  "name": "Cipher AI - Navigate the world of online shopping.",
   "version": "1.0.4",
   "description": "Displays additional info that tells you about the companies you are buying from on Amazon. Displays product page directly.",
   
@@ -31,7 +31,7 @@
         "*://*.amazon.ca/*/dp/*",
         "*://*.amazon.ca/gp/product/*"
       ],
-      "js": ["React/react.js", "React/react-dom.js", "Util/ChromeGlobalVariablesAndMethods.js", "Util/ChromeRuntimeMessageListeners.js", "Util/OverlayPopupManager.js",  "Components/TiltAIHeader.js", "Components/CompassAIComponent.js", "Components/CompassAIWithPaygateComponent.js", "PageParsers/typicalProductPageParser.js", "PageParsers/bookPageParser.js", "ComponentInsertionManager.js", "NetworkManager.js", "DisplayElementManager.js", "PayGate/RateLimitManager.js", "content.js"],
+      "js": ["React/react.js", "React/react-dom.js", "Util/ChromeGlobalVariablesAndMethods.js", "Util/ChromeRuntimeMessageListeners.js", "Util/OverlayPopupManager.js",  "Components/TiltAIHeader.js", "Components/CipherAIComponent.js", "Components/CipherAIWithPaygateComponent.js", "PageParsers/typicalProductPageParser.js", "PageParsers/bookPageParser.js", "ComponentInsertionManager.js", "NetworkManager.js", "DisplayElementManager.js", "PayGate/RateLimitManager.js", "content.js"],
       "css": ["styles.css"],
       "run_at": "document_idle"
     }
@@ -39,7 +39,7 @@
   
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Compass AI Settings"
+    "default_title": "Cipher AI Settings"
   },
   "web_accessible_resources": [
     {
@@ -48,9 +48,9 @@
     }
   ],
   "icons": {
-    "16": "icons/compass_logo@16.png",
-    "32": "icons/compass_logo@32.png",
-    "48": "icons/compass_logo@48.png",
-    "128": "icons/compass_logo@128.png"
+    "16": "icons/cipher_logo@16.png",
+    "32": "icons/cipher_logo@32.png",
+    "48": "icons/cipher_logo@48.png",
+    "128": "icons/cipher_logo@128.png"
   }
 }

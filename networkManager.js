@@ -88,6 +88,65 @@ class NetworkManager {
     );
   }
 
+  async fetchAnalysis(companyName, category = 'Political Leaning') {
+    const endpointMap = {
+      'Political Leaning':     'getPoliticalLeaning',
+      'DEI Friendliness':      'getDEIFriendlinessScore',
+      'Wokeness':              'getWokenessScore',
+      'Environmental Impact':  'getEnvironmentalImpactScore',
+      'Immigration Support':   'getImmigrationSupportScore',
+      'Technology Innovation': 'getTechnologyInnovationScore',
+      'Financial Contributions': 'getPoliticalLeaningWithCitation',
+    };
+
+    const endpoint = endpointMap[category] || 'getPoliticalLeaning';
+
+    if (!companyName || companyName === 'no-info-found') {
+      return null;
+    }
+
+    try {
+      const url = `${this.baseUrl}/${endpoint}/${companyName.trim()}`;
+      console.log(`Fetching [${category}] from:`, url);
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!response.ok) {
+        console.error(`${category} API response not ok:`, response.status, response.statusText);
+        return null;
+      }
+
+      const data = await response.json();
+
+      const lean    = data.lean    ?? data.response?.lean    ?? 'Unknown';
+      const rating  = data.rating  ?? data.response?.rating  ?? 'N/A';
+      const context = data.context ?? data.response?.context ?? 'No information available.';
+      const topic   = data.topic   ?? data.response?.topic   ?? companyName;
+      const created_with_financial_contributions_info =
+        data.created_with_financial_contributions_info ??
+        data.response?.created_with_financial_contributions_info ?? false;
+
+      return {
+        lean:        lean.toString(),
+        score:       rating.toString(),
+        description: context,
+        citationUrl: `Financial Contributions Overview for ${topic}`,
+        companyName: topic,
+        queryType:   category,
+        created_with_financial_contributions_info,
+        timestamp:   data.timestamp ?? data.response?.timestamp,
+        debug:       data.debug     ?? data.response?.debug,
+      };
+
+    } catch (error) {
+      console.error(`Error fetching [${category}] for ${companyName}:`, error);
+      return null;
+    }
+  }
+
   async fetchPoliticalLeaning(companyName) {
         console.log('Now fetching political leaning....')
 

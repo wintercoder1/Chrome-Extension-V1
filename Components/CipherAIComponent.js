@@ -1,6 +1,6 @@
 // TODO: Make this work the more traditonal React way with hooks.
 
-const CompassAIComponent = ({ companyName, brandName = null, politicalData = null, isLoading = false }) => {
+const CipherAIComponent = ({ companyName, brandName = null, politicalData = null, isLoading = false }) => {
     // Default data structure for when API fails or no data
     const defaultPoliticalData = {
         lean: 'Unknown',
@@ -44,9 +44,16 @@ const CompassAIComponent = ({ companyName, brandName = null, politicalData = nul
         // Dev
         // const BASE_URL = 'http://localhost:5173'
         // Prod
-        const BASE_URL = 'https://wintercoder1.github.io' 
+        const BASE_URL = 'https://wintercoder1.github.io'
         // Financial contributions overview URl.
         const url = `${BASE_URL}/Cool-Project-Frontend#/organization/financial-contributions/${encodeURIComponent(companyName)}`
+        window.open(url, '_blank');
+    };
+
+    const handleOpenLink = (e) => {
+        e.preventDefault();
+        const BASE_URL = 'https://wintercoder1.github.io';
+        const url = `${BASE_URL}/Cool-Project-Frontend/#/organization/political_leaning/${encodeURIComponent(companyName)}`;
         window.open(url, '_blank');
     };
     const handleCitationClickWikipedia = (e) => {
@@ -115,11 +122,36 @@ const CompassAIComponent = ({ companyName, brandName = null, politicalData = nul
             //         onClick: handleCitationClickWikipedia
             //     }, 'Wikipedia')
             // )
-            
+
+            React.createElement('div', { className: 'open-link-section' },
+                React.createElement('button', {
+                    className: 'open-link-btn',
+                    onClick: handleOpenLink,
+                    title: `Open ${companyName} on Cipher AI`
+                },
+                    React.createElement('svg', {
+                        xmlns: 'http://www.w3.org/2000/svg',
+                        width: '14',
+                        height: '14',
+                        viewBox: '0 0 24 24',
+                        fill: 'none',
+                        stroke: 'currentColor',
+                        strokeWidth: '2',
+                        strokeLinecap: 'round',
+                        strokeLinejoin: 'round'
+                    },
+                        React.createElement('path', { d: 'M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6' }),
+                        React.createElement('polyline', { points: '15 3 21 3 21 9' }),
+                        React.createElement('line', { x1: '10', y1: '14', x2: '21', y2: '3' })
+                    ),
+                    ''
+                )
+            )
+
         )
     );
 };
 
 
 // Export for use in other modules
-window.CompassAIComponent = CompassAIComponent;
+window.CipherAIComponent = CipherAIComponent;

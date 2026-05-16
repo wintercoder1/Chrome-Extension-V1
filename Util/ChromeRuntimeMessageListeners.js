@@ -8,28 +8,16 @@
 // Add this at the very top of your content.js file, outside of any class
 
 
-// Global message listener that works even if the class failed to initialize
+// Handles categoryChanged only — manualRefresh and forceOverlay are handled by OverlayPopupManager.js
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log('📨 GLOBAL DEBUG: Received message:', message);
-    
-    if (message.action === 'manualRefresh') {
-        console.log('🔄 GLOBAL DEBUG: Processing manual refresh request');
-        
-        // Handle the case where the original instance failed
-        handleManualRefresh()
-            .then(result => {
-                console.log('✅ GLOBAL DEBUG: Manual refresh result:', result);
-                sendResponse(result);
-            })
-            .catch(error => {
-                console.error('💥 GLOBAL DEBUG: Manual refresh error:', error);
-                sendResponse({ 
-                    success: false, 
-                    message: `Manual refresh failed: ${error.message}` 
-                });
-            });
-        
-        // Return true to indicate we'll send a response asynchronously
+    if (message.action === 'categoryChanged') {
+        console.log('🔄 Category changed to:', message.category);
+        const refreshPromise = globalAmazonBrandTracker
+            ? globalAmazonBrandTracker.refreshWithCategory(message.category)
+            : handleManualRefresh();
+        refreshPromise
+            .then(result => sendResponse(result))
+            .catch(error => sendResponse({ success: false, message: error.message }));
         return true;
     }
 });

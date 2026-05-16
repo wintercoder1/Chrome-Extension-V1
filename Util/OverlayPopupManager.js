@@ -45,63 +45,48 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 });
 
-// NEW: Global overlay handler
+// Global overlay handler
 async function handleForceOverlay() {
     console.log('🖼️ GLOBAL DEBUG: Starting global overlay handler');
-    
+
     try {
+        if (!globalAmazonBrandTracker) {
+            return { success: false, message: 'Extension not initialized. Try reloading the page.' };
+        }
+
         // Remove any existing overlay first
         if (currentOverlay) {
             currentOverlay.remove();
             currentOverlay = null;
         }
-        
-        // Get brand/company information from the current page
-        let companyName = '';
-        let brandInfo = null;
-        
-        // Try to get info from existing tracker instance
-        if (globalAmazonBrandTracker) {
-            console.log('✅ OVERLAY DEBUG: Found existing tracker instance');
-            brandInfo = globalAmazonBrandTracker.classifyProductAndExtractBrandInfo();
-        } else {
-            console.log('🔧 OVERLAY DEBUG: No tracker instance, creating temporary one');
-            // Create temporary instance for extraction
-            const tempTracker = new AmazonBrandTracker();
-            brandInfo = tempTracker.classifyProductAndExtractBrandInfo();
-        }
-        
-        // Extract company name for API call
-        if (brandInfo === 'no-info-found') {
-            companyName = 'Unknown Company';
-        } else if (brandInfo && brandInfo.type === 'product_with_manufacturer' && 
-                   brandInfo.brand !== brandInfo.manufacturer) {
-            companyName = brandInfo.manufacturer;
-        } else if (brandInfo && brandInfo.type === 'book') {
-            companyName = brandInfo.publisher || 'Unknown Publisher';
-        } else if (brandInfo && brandInfo.manufacturer && brandInfo.manufacturer !== 'information...') {
-            companyName = brandInfo.manufacturer || brandInfo.brand || 'Unknown Company';
-        } else if (brandInfo && brandInfo.brand) {
-            companyName = brandInfo.brand;
-        } else {
-            companyName = 'Unknown Company';
-        }
-        
-        console.log('🔍 OVERLAY DEBUG: Extracted company name:', companyName);
-        
-        // Create and show the overlay
-        await globalAmazonBrandTracker.displayElementManager.createOverlayWithComponent(companyName, brandInfo);
-        
-        return { 
-            success: true, 
-            message: `Overlay created successfully for ${companyName}` 
+
+        // Use already-stored company name from the initial page analysis
+        let companyName = globalAmazonBrandTracker.companyName;
+        let brandInfo = {
+            type: 'product_with_manufacturer',
+            brand: globalAmazonBrandTracker.brandName || companyName,
+            manufacturer: companyName
         };
-        
+
+        // Fall back to re-parsing if we don't have a stored name yet
+        if (!companyName) {
+            console.log('🔍 OVERLAY DEBUG: No stored company name, re-parsing page');
+            const parsed = globalAmazonBrandTracker.classifyProductAndExtractBrandInfo();
+            if (parsed === 'no-info-found' || !parsed) {
+                return { success: false, message: 'Could not determine company from this page.' };
+            }
+            brandInfo = parsed;
+            companyName = parsed.manufacturer || parsed.brand || parsed.publisher || 'Unknown Company';
+        }
+
+        console.log('🔍 OVERLAY DEBUG: Creating overlay for:', companyName);
+
+        await globalAmazonBrandTracker.displayElementManager.createOverlayWithComponent(companyName, brandInfo);
+
+        return { success: true, message: `Overlay created for ${companyName}` };
+
     } catch (error) {
         console.error('💥 OVERLAY DEBUG: Error in overlay creation:', error);
-        return { 
-            success: false, 
-            message: `Overlay creation failed: ${error.message}` 
-        };
+        return { success: false, message: `Overlay creation failed: ${error.message}` };
     }
 }

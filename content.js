@@ -64,10 +64,10 @@ class AmazonBrandTracker {
     // Wait for page to load and then extract brand info
     if (document.readyState === 'loading') {
       console.log('Page loading...')
-      document.addEventListener('DOMContentLoaded', () => this.classifyWebpageExtractInfoAndUpdateDisplayWithCompassComponent());
+      document.addEventListener('DOMContentLoaded', () => this.classifyWebpageExtractInfoAndUpdateDisplayWithCipherComponent());
     } else {
       console.log('Will now classify webpage and insert component in correct location:');
-      this.classifyWebpageExtractInfoAndUpdateDisplayWithCompassComponent();
+      this.classifyWebpageExtractInfoAndUpdateDisplayWithCipherComponent();
     }
   }
 
@@ -141,11 +141,11 @@ class AmazonBrandTracker {
   ///
   //
   //
-//   async classifyWebpageExtractInfoAndUpdateDisplayWithCompassComponent() {
+//   async classifyWebpageExtractInfoAndUpdateDisplayWithCipherComponent() {
 //     // First we create the component. It will initially be in its loading state.
 //     console.log('Now displaying extension component...');
 //     const displayInfo = {'type': 'product_with_manufacturer'};
-//     const loadingElement = this.displayElementManager.createDisplayElementWithComponentCompass(displayInfo, null, true);
+//     const loadingElement = this.displayElementManager.createDisplayElementWithComponentCipher(displayInfo, null, true);
 //     loadingElement.classList.add('loading');
 //     this.displayElementManager.insertDisplayElement(loadingElement);
     
@@ -204,7 +204,7 @@ class AmazonBrandTracker {
 //     // If we have a valid company name, fetch political leaning data
 //     if (companyName && companyName !== 'Unknown Company' && companyName !== 'no-info-found') {
 //         try {
-//             // Call the Compass AI political leaning endpoint
+//             // Call the Cipher AI political leaning endpoint
 //             console.log('Political leaning data fetch initiated:');
 //             const politicalData = await this.networkManager.fetchPoliticalLeaning(companyName);
 //             console.log('Network call complete!!!');
@@ -212,25 +212,25 @@ class AmazonBrandTracker {
             
 //             // Update the component with the API data
 //             console.log('Will update component now.');
-//             this.displayElementManager.updateDisplayElementCompass(productPageInfo, null, politicalData);
+//             this.displayElementManager.updateDisplayElementCipher(productPageInfo, null, politicalData);
             
 //         } catch (error) {
 //             console.error('Error in political leaning flow:', error);
 //             // Fallback to showing basic company info
 //             setTimeout(() => {
-//                 this.displayElementManager.updateDisplayElementCompass(companyName, null, null);
+//                 this.displayElementManager.updateDisplayElementCipher(companyName, null, null);
 //             }, 800);
 //         }
 //     } else {
 //         // If no valid company name, show error state
 //         console.log('No valid company name found, showing error state');
 //         setTimeout(() => {
-//             this.displayElementManager.updateDisplayElementCompass('no-info-found', null, null);
+//             this.displayElementManager.updateDisplayElementCipher('no-info-found', null, null);
 //         }, 800);
 //     }
 //   }
 
-//   async classifyWebpageExtractInfoAndUpdateDisplayWithCompassComponent() {
+//   async classifyWebpageExtractInfoAndUpdateDisplayWithCipherComponent() {
 //     // First check if user has exceeded daily limit
 //     const hasExceededLimit = await this.rateLimitManager.hasExceededLimit();
     
@@ -239,13 +239,13 @@ class AmazonBrandTracker {
       
 //       // Create and show the paygate component immediately
 //       const displayInfo = {'type': 'paygate'};
-//       const paygateElement = this.displayElementManager.createDisplayElementWithComponentCompass(displayInfo, null, true);
+//       const paygateElement = this.displayElementManager.createDisplayElementWithComponentCipher(displayInfo, null, true);
 //       paygateElement.classList.add('paygate');
 //       this.displayElementManager.insertDisplayElement(paygateElement);
       
 //       // Update with paygate UI
 //       setTimeout(() => {
-//         this.displayElementManager.updateDisplayElementWithPayGateCompass();
+//         this.displayElementManager.updateDisplayElementWithPayGateCipher();
 //       }, 300);
       
 //       return;
@@ -258,7 +258,7 @@ class AmazonBrandTracker {
 //     // First we create the component. It will initially be in its loading state.
 //     console.log('Now displaying extension component...');
 //     const displayInfo = {'type': 'product_with_manufacturer'};
-//     const loadingElement = this.displayElementManager.createDisplayElementWithComponentCompass(displayInfo, null, true);
+//     const loadingElement = this.displayElementManager.createDisplayElementWithComponentCipher(displayInfo, null, true);
 //     loadingElement.classList.add('loading');
 //     this.displayElementManager.insertDisplayElement(loadingElement);
     
@@ -320,7 +320,7 @@ class AmazonBrandTracker {
             
 //             // Update the component with the API data
 //             console.log('Will update component now.');
-//             this.displayElementManager.updateDisplayElementCompass(productPageInfo, null, politicalData);
+//             this.displayElementManager.updateDisplayElementCipher(productPageInfo, null, politicalData);
             
 //         } catch (error) {
 //             console.error('Error in political leaning flow:', error);
@@ -329,7 +329,7 @@ class AmazonBrandTracker {
             
 //             // Fallback to showing basic company info
 //             setTimeout(() => {
-//                 this.displayElementManager.updateDisplayElementCompass(companyName, null, null);
+//                 this.displayElementManager.updateDisplayElementCipher(companyName, null, null);
 //             }, 800);
 //         }
 //     } else {
@@ -337,12 +337,12 @@ class AmazonBrandTracker {
 //         console.log('No valid company name found, showing error state');
 //         console.log('⚠️ RATE LIMIT: No valid company, not incrementing counter');
 //         setTimeout(() => {
-//             this.displayElementManager.updateDisplayElementCompass('no-info-found', null, null);
+//             this.displayElementManager.updateDisplayElementCipher('no-info-found', null, null);
 //         }, 800);
 //     }
 //   }
 
-  async classifyWebpageExtractInfoAndUpdateDisplayWithCompassComponent() {
+  async classifyWebpageExtractInfoAndUpdateDisplayWithCipherComponent() {
     // First check if user has exceeded daily limit
     const hasExceededLimit = await this.rateLimitManager.hasExceededLimit();
     
@@ -355,7 +355,7 @@ class AmazonBrandTracker {
       
       // Create and show the paygate component immediately
       const displayInfo = {'type': 'paygate'};
-    //   const paygateElement = this.displayElementManager.createDisplayElementWithComponentCompass(displayInfo, null, true);
+    //   const paygateElement = this.displayElementManager.createDisplayElementWithComponentCipher(displayInfo, null, true);
     //   paygateElement.classList.add('paygate');
     //   this.displayElementManager.insertDisplayElement(paygateElement);
       // ^^^^ This is the code that actually displays on the page.
@@ -363,13 +363,13 @@ class AmazonBrandTracker {
       // Update with paygate UI
     //   setTimeout(() => {
         // console.log('Updating to paygate UI');
-        // this.displayElementManager.updateDisplayElementWithPayGateCompass();
-        // this.displayElementManager.updateDisplayElementWithPayGateCompass();
+        // this.displayElementManager.updateDisplayElementWithPayGateCipher();
+        // this.displayElementManager.updateDisplayElementWithPayGateCipher();
     //   }, 300);
       
         // this.displayElementManager.createDisplayElementWithPaygate(brandInfo, ownerInfo = null, isLoading = false, isProUser = false)
         // console.log('Will update component now.');
-        // this.displayElementManager.updateDisplayElementCompass(productPageInfo, null, politicalData);
+        // this.displayElementManager.updateDisplayElementCipher(productPageInfo, null, politicalData);
             
 
 
@@ -384,7 +384,7 @@ class AmazonBrandTracker {
     // First we create the component. It will initially be in its loading state.
     console.log('Now displaying extension component...');
     const displayInfo = {'type': 'product_with_manufacturer'};
-    const loadingElement = this.displayElementManager.createDisplayElementWithComponentCompass(displayInfo, null, true);
+    const loadingElement = this.displayElementManager.createDisplayElementWithComponentCipher(displayInfo, null, true);
     loadingElement.classList.add('loading');
     this.displayElementManager.insertDisplayElement(loadingElement);
     
@@ -427,11 +427,17 @@ class AmazonBrandTracker {
 
     console.log('Extracted company name for API call:', companyName);
 
-    // If we have a valid company name, fetch political leaning data
+    // Store for use by refreshWithCategory
+    this.companyName = companyName;
+    this.brandName = brandName;
+
+    // If we have a valid company name, fetch analysis data
     if (companyName && companyName !== 'Unknown Company' && companyName !== 'no-info-found') {
         try {
-            console.log('Political leaning data fetch initiated:');
-            const politicalData = await this.networkManager.fetchPoliticalLeaning(companyName);
+            const { analysisCategory } = await chrome.storage.sync.get(['analysisCategory']);
+            const category = analysisCategory || 'Political Leaning';
+            console.log(`Analysis fetch initiated [${category}]:`, companyName);
+            const politicalData = await this.networkManager.fetchAnalysis(companyName, category);
             console.log('Network call complete!!!');
             
             // 🎯 CRITICAL: Increment request counter ONLY on successful API response
@@ -453,7 +459,7 @@ class AmazonBrandTracker {
             // Update the component with the API data
             // THIS IS WHAT INITIALLY INSERTS THE COMPONENT ON THE PRODUCT PAGE.
             console.log('Will update component now.');
-            this.displayElementManager.updateDisplayElementCompass(productPageInfo, null, politicalData);
+            this.displayElementManager.updateDisplayElementCipher(productPageInfo, null, politicalData);
             
         } catch (error) {
             console.error('Error in political leaning flow:', error);
@@ -462,7 +468,7 @@ class AmazonBrandTracker {
             
             // Fallback to showing basic company info
             setTimeout(() => {
-                this.displayElementManager.updateDisplayElementCompass(companyName, null, null);
+                this.displayElementManager.updateDisplayElementCipher(companyName, null, null);
             }, 800);
         }
     } else {
@@ -470,7 +476,7 @@ class AmazonBrandTracker {
         console.log('No valid company name found, showing error state');
         console.log('⚠️ RATE LIMIT: No valid company, not incrementing counter');
         setTimeout(() => {
-            this.displayElementManager.updateDisplayElementCompass('no-info-found', null, null);
+            this.displayElementManager.updateDisplayElementCipher('no-info-found', null, null);
         }, 800);
     }
   }
@@ -482,9 +488,9 @@ class AmazonBrandTracker {
     try {
         console.log('🔍 DEBUG: DisplayElementManager exists:', !!this.displayElementManager);
         console.log('🔍 DEBUG: DisplayElementManager methods:');
-        console.log('  - createDisplayElementWithComponentCompass:', typeof this.displayElementManager.createDisplayElementWithComponentCompass);
+        console.log('  - createDisplayElementWithComponentCipher:', typeof this.displayElementManager.createDisplayElementWithComponentCipher);
         console.log('  - insertDisplayElement:', typeof this.displayElementManager.insertDisplayElement);
-        console.log('  - updateDisplayElementCompass:', typeof this.displayElementManager.updateDisplayElementCompass);
+        console.log('  - updateDisplayElementCipher:', typeof this.displayElementManager.updateDisplayElementCipher);
         
         // Test creating a simple element
         const testElement = document.createElement('div');
@@ -510,6 +516,40 @@ class AmazonBrandTracker {
   }
 
   
+
+  async refreshWithCategory(category) {
+    const displayElement = this.displayElementManager?.displayElement;
+
+    if (!this.companyName || !displayElement) {
+      console.log('refreshWithCategory: no stored company — falling back to full refresh');
+      return this.manualRefreshComponent();
+    }
+
+    console.log(`refreshWithCategory: re-fetching [${category}] for ${this.companyName}`);
+
+    // Show loading state in-place (no DOM removal/re-insertion needed)
+    ReactDOM.render(
+      React.createElement(window.CipherAIComponent, {
+        companyName: this.companyName,
+        brandName: this.brandName,
+        isLoading: true
+      }),
+      displayElement
+    );
+
+    try {
+      const data = await this.networkManager.fetchAnalysis(this.companyName, category);
+      this.displayElementManager.updateDisplayElementCipher(
+        { manufacturer: this.companyName, brand: this.brandName },
+        null,
+        data
+      );
+      return { success: true, message: `Category updated to: ${category}` };
+    } catch (error) {
+      console.error('Error refreshing with category:', error);
+      return { success: false, message: error.message };
+    }
+  }
 
   // ENHANCED manualRefreshComponent method for the class
   async manualRefreshComponent() {
@@ -537,7 +577,7 @@ class AmazonBrandTracker {
           console.log('🔄 CLASS DEBUG: Re-initializing with layout mode:', this.layoutMode);
           
           // Re-run the main component insertion logic
-          await this.classifyWebpageExtractInfoAndUpdateDisplayWithCompassComponent();
+          await this.classifyWebpageExtractInfoAndUpdateDisplayWithCipherComponent();
           
           console.log('✅ CLASS DEBUG: Manual refresh completed successfully');
           return { success: true, message: 'Component refreshed successfully via class instance' };

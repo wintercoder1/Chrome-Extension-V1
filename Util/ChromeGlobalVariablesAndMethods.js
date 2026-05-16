@@ -40,7 +40,7 @@ async function handleManualRefresh() {
         
         // Force the component insertion
         console.log('🚀 GLOBAL DEBUG: Forcing component insertion');
-        await tempTracker.classifyWebpageExtractInfoAndUpdateDisplayWithCompassComponent();
+        await tempTracker.classifyWebpageExtractInfoAndUpdateDisplayWithCipherComponent();
         
         return { 
             success: true, 

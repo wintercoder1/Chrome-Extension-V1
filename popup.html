@@ -190,11 +190,31 @@
       color: #666;
       font-family: monospace;
     }
+    .category-select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #f7f7f7;
+      font-size: 14px;
+      color: #232f3e;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+      box-sizing: border-box;
+    }
+    .category-select:focus {
+      outline: none;
+      border-color: #007185;
+    }
   </style>
 </head>
 <body>
   <div class="header">
-    <h1>🔍 Compass AI Brand Decoder</h1>
+    <h1>🔍 Cipher AI Brand Decoder</h1>
     <!-- <p>Configure display preferences</p> -->
   </div>
   
@@ -215,6 +235,19 @@
       <div class="preview-text" id="previewText">Brand info will appear in the buy box (right side)</div>
     </div>
   </div> -->
+
+  <div class="setting-group">
+    <div class="setting-label">Analysis Category</div>
+    <select class="category-select" id="categorySelect">
+      <option value="Political Leaning">Political Leaning</option>
+      <option value="DEI Friendliness">DEI Friendliness</option>
+      <option value="Wokeness">Wokeness</option>
+      <option value="Environmental Impact">Environmental Impact</option>
+      <option value="Immigration Support">Immigration Support</option>
+      <option value="Technology Innovation">Technology Innovation</option>
+      <option value="Financial Contributions">Financial Contributions</option>
+    </select>
+  </div>
 
   <div class="refresh-section">
     <div class="setting-label">Component Controls</div>
@@ -423,7 +456,7 @@
 </head>
 <body>
   <div class="header">
-    <h1>🔍 Compass/Tilt AI Brand Decoder</h1>
+    <h1>🔍 Cipher AI Brand Decoder</h1>
     <p>Configure display preferences</p>
   </div>
   
