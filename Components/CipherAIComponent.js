@@ -34,7 +34,7 @@ const CipherAIComponent = ({ companyName, brandName = null, politicalData = null
             { className: 'tilt-ai-container loading' },
             React.createElement(window.TiltAIHeader),
             React.createElement('div', { className: 'tilt-ai-content' },
-                React.createElement('div', { className: 'loading-placeholder' }, `Loading ${category} analysis...`)
+                React.createElement('div', { className: 'loading-placeholder' }, `Loading ${category.toLowerCase()} analysis...`)
             )
         );
     }
@@ -49,7 +49,8 @@ const CipherAIComponent = ({ companyName, brandName = null, politicalData = null
 
     const handleOpenLink = (e) => {
         e.preventDefault();
-        const url = `${BASE_URL}/organization/political_leaning/${encodeURIComponent(companyName)}`;
+        const slug = data.queryType.toLowerCase().replace(/\s+/g, '_');
+        const url = `${BASE_URL}/organization/${slug}/${encodeURIComponent(companyName)}`;
         window.open(url, '_blank');
     };
     const handleCitationClickWikipedia = (e) => {
