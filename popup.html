@@ -12,183 +12,52 @@
     }
     .header {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
     }
     .header h1 {
       font-size: 18px;
-      margin: 0 0 8px 0;
-      color: #232f3e;
-    }
-    .header p {
       margin: 0;
-      color: #666;
-      font-size: 12px;
-    }
-    .setting-group {
-      margin-bottom: 20px;
-    }
-    .setting-label {
-      font-weight: 600;
-      margin-bottom: 8px;
       color: #232f3e;
     }
-    .toggle-container {
+
+    /* Tab bar */
+    .tab-bar {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px;
-      background: #f7f7f7;
-      border-radius: 8px;
-      border: 1px solid #ddd;
+      border-bottom: 2px solid #e0e0e0;
+      margin: 0 -16px 16px;
     }
-    .toggle-info {
+    .tab-btn {
       flex: 1;
-    }
-    .toggle-title {
-      font-weight: 500;
-      margin-bottom: 4px;
-      color: #232f3e;
-    }
-    .toggle-description {
-      font-size: 12px;
-      color: #666;
-    }
-    .toggle-switch {
-      position: relative;
-      width: 44px;
-      height: 24px;
-      background: #ccc;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .toggle-switch.active {
-      background: #007185;
-    }
-    .toggle-slider {
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 20px;
-      height: 20px;
-      background: white;
-      border-radius: 50%;
-      transition: transform 0.3s;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    }
-    .toggle-switch.active .toggle-slider {
-      transform: translateX(20px);
-    }
-    .preview {
-      margin-top: 16px;
-      padding: 12px;
-      background: #e7f3ff;
-      border-radius: 6px;
-      border-left: 3px solid #007185;
-    }
-    .preview-title {
-      font-weight: 500;
-      margin-bottom: 4px;
-      color: #232f3e;
-    }
-    .preview-text {
-      font-size: 12px;
-      color: #666;
-    }
-    .status {
-      text-align: center;
-      padding: 8px;
-      border-radius: 4px;
-      margin-top: 16px;
-      font-size: 12px;
-    }
-    .status.success {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
-    .status.warning {
-      background: #fff3cd;
-      color: #856404;
-      border: 1px solid #ffeaa7;
-    }
-    .status.error {
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
-    }
-    
-    /* Refresh section styles */
-    .refresh-section {
-      border-top: 1px solid #ddd;
-      padding-top: 16px;
-      margin-top: 16px;
-    }
-    .action-button {
-      width: 100%;
-      padding: 12px;
+      padding: 9px 8px;
+      background: none;
       border: none;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.3s;
-      margin-bottom: 8px;
-    }
-    .refresh-button {
-      background: #b3b2b2;
-      color: white;
-    }
-    .refresh-button:hover {
-      background: #aeaeae;
-    }
-    .refresh-button:active {
-      background: #aaa9a9;
-    }
-    .refresh-button:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-    }
-    
-    /* New overlay button styles */
-    .overlay-button {
-      background: #232f3e;
-      color: white;
-    }
-    .overlay-button:hover {
-      background: #1a252f;
-    }
-    .overlay-button:active {
-      background: #131b22;
-    }
-    .overlay-button:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-    }
-    
-    .button-description {
-      font-size: 11px;
-      color: #666;
-      margin-bottom: 12px;
-      line-height: 1.4;
-    }
-    .debug-section {
-      margin-top: 12px;
-      padding: 8px;
-      background: #f5f5f5;
-      border-radius: 4px;
-      border: 1px solid #ddd;
-    }
-    .debug-title {
-      font-weight: 500;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
       font-size: 12px;
-      margin-bottom: 6px;
-      color: #232f3e;
+      font-weight: 600;
+      color: #888;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+      letter-spacing: 0.2px;
     }
-    .debug-info {
-      font-size: 10px;
-      color: #666;
-      font-family: monospace;
+    .tab-btn.active {
+      color: #232f3e;
+      border-bottom-color: #007185;
+    }
+    .tab-btn:hover:not(.active) {
+      color: #444;
+      background: #f5f5f5;
+    }
+    .tab-panel {
+      display: none;
+    }
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* Category tab */
+    .setting-group {
+      margin-bottom: 4px;
     }
     .category-select {
       width: 100%;
@@ -210,228 +79,37 @@
       outline: none;
       border-color: #007185;
     }
-  </style>
-</head>
-<body>
-  <div class="header">
-    <h1>🔍 Cipher AI Brand Decoder</h1>
-    <!-- <p>Configure display preferences</p> -->
-  </div>
-  
-  <!-- <div class="setting-group">
-    <div class="setting-label">Display Location</div>
-    <div class="toggle-container">
-      <div class="toggle-info">
-        <div class="toggle-title">Product Details Area</div>
-        <div class="toggle-description">Show in left column with product info</div>
-      </div>
-      <div class="toggle-switch" id="layoutToggle">
-        <div class="toggle-slider"></div>
-      </div>
-    </div>
-    
-    <div class="preview" id="preview">
-      <div class="preview-title">Current Setting:</div>
-      <div class="preview-text" id="previewText">Brand info will appear in the buy box (right side)</div>
-    </div>
-  </div> -->
 
-  <div class="setting-group">
-    <div class="setting-label">Analysis Category</div>
-    <select class="category-select" id="categorySelect">
-      <option value="Political Leaning">Political Leaning</option>
-      <option value="DEI Friendliness">DEI Friendliness</option>
-      <option value="Wokeness">Wokeness</option>
-      <option value="Environmental Impact">Environmental Impact</option>
-      <option value="Immigration Support">Immigration Support</option>
-      <option value="Technology Innovation">Technology Innovation</option>
-      <option value="Financial Contributions">Financial Contributions</option>
-    </select>
-  </div>
-
-  <div class="refresh-section">
-    <div class="setting-label">Component Controls</div>
-    
-    <div class="button-description">
-      If the component doesn't appear on a page, use this button to manually trigger the insertion after the page has fully loaded.
-    </div>
-    <button class="action-button refresh-button" id="refreshButton">
-      🔄 Force Refresh Component
-    </button>
-    
-    <div class="button-description">
-      Show the component in a full-screen overlay. If this is the odd Amazon Product page that won't allow the component to appear this is a fallback option. The component can be made to appear in its own overaly without insertion into the product page.
-    </div>
-    <button class="action-button overlay-button" id="overlayButton">
-      Force Component Overlay Display
-    </button>
-    
-    <div class="debug-section" id="debugSection" style="display: none;">
-      <div class="debug-title">Debug Info:</div>
-      <div class="debug-info" id="debugInfo">No debug data available</div>
-    </div>
-  </div>
-  
-  <div class="status success" id="status" style="display: none;">
-    Settings saved successfully!
-  </div>
-  
-  <script src="popup.js"></script>
-</body>
-</html>
-
-<!-- <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <style>
-    body {
-      width: 280px;
-      padding: 16px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      font-size: 14px;
-      margin: 0;
-    }
-    .header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .header h1 {
-      font-size: 18px;
-      margin: 0 0 8px 0;
-      color: #232f3e;
-    }
-    .header p {
-      margin: 0;
-      color: #666;
-      font-size: 12px;
-    }
-    .setting-group {
-      margin-bottom: 20px;
-    }
-    .setting-label {
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: #232f3e;
-    }
-    .toggle-container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px;
-      background: #f7f7f7;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-    }
-    .toggle-info {
-      flex: 1;
-    }
-    .toggle-title {
-      font-weight: 500;
-      margin-bottom: 4px;
-      color: #232f3e;
-    }
-    .toggle-description {
-      font-size: 12px;
-      color: #666;
-    }
-    .toggle-switch {
-      position: relative;
-      width: 44px;
-      height: 24px;
-      background: #ccc;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .toggle-switch.active {
-      background: #007185;
-    }
-    .toggle-slider {
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 20px;
-      height: 20px;
-      background: white;
-      border-radius: 50%;
-      transition: transform 0.3s;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    }
-    .toggle-switch.active .toggle-slider {
-      transform: translateX(20px);
-    }
-    .preview {
-      margin-top: 16px;
-      padding: 12px;
-      background: #e7f3ff;
-      border-radius: 6px;
-      border-left: 3px solid #007185;
-    }
-    .preview-title {
-      font-weight: 500;
-      margin-bottom: 4px;
-      color: #232f3e;
-    }
-    .preview-text {
-      font-size: 12px;
-      color: #666;
-    }
-    .status {
-      text-align: center;
-      padding: 8px;
-      border-radius: 4px;
-      margin-top: 16px;
-      font-size: 12px;
-    }
-    .status.success {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
-    .status.warning {
-      background: #fff3cd;
-      color: #856404;
-      border: 1px solid #ffeaa7;
-    }
-    .status.error {
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
-    }
-    
-    /* New styles for refresh section */
-    .refresh-section {
-      border-top: 1px solid #ddd;
-      padding-top: 16px;
-      margin-top: 16px;
-    }
-    .refresh-button {
+    /* Controls tab */
+    .action-button {
       width: 100%;
       padding: 12px;
-      background: #ff9900;
-      color: white;
       border: none;
       border-radius: 6px;
       font-size: 14px;
       font-weight: 500;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: background 0.2s;
+      margin-bottom: 8px;
     }
-    .refresh-button:hover {
-      background: #e68900;
+    .refresh-button {
+      background: #b3b2b2;
+      color: white;
     }
-    .refresh-button:active {
-      background: #cc7700;
+    .refresh-button:hover  { background: #9e9d9d; }
+    .refresh-button:active { background: #8e8d8d; }
+    .refresh-button:disabled { background: #ccc; cursor: not-allowed; }
+    .overlay-button {
+      background: #232f3e;
+      color: white;
     }
-    .refresh-button:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-    }
-    .refresh-description {
+    .overlay-button:hover  { background: #1a252f; }
+    .overlay-button:active { background: #131b22; }
+    .overlay-button:disabled { background: #ccc; cursor: not-allowed; }
+    .button-description {
       font-size: 11px;
       color: #666;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       line-height: 1.4;
     }
     .debug-section {
@@ -452,51 +130,71 @@
       color: #666;
       font-family: monospace;
     }
+
+    /* Status bar */
+    .status {
+      text-align: center;
+      padding: 8px;
+      border-radius: 4px;
+      margin-top: 12px;
+      font-size: 12px;
+    }
+    .status.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .status.warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+    .status.error   { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
   </style>
 </head>
 <body>
   <div class="header">
     <h1>🔍 Cipher AI Brand Decoder</h1>
-    <p>Configure display preferences</p>
   </div>
-  
-  <div class="setting-group">
-    <div class="setting-label">Display Location</div>
-    <div class="toggle-container">
-      <div class="toggle-info">
-        <div class="toggle-title">Product Details Area</div>
-        <div class="toggle-description">Show in left column with product info</div>
-      </div>
-      <div class="toggle-switch" id="layoutToggle">
-        <div class="toggle-slider"></div>
-      </div>
-    </div>
-    
-    <div class="preview" id="preview">
-      <div class="preview-title">Current Setting:</div>
-      <div class="preview-text" id="previewText">Brand info will appear in the buy box (right side)</div>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="category">Analysis Category</button>
+    <button class="tab-btn" data-tab="controls">Component Controls</button>
+  </div>
+
+  <!-- Tab 1: Analysis Category -->
+  <div class="tab-panel active" id="tab-category">
+    <div class="setting-group">
+      <select class="category-select" id="categorySelect">
+        <option value="Political Leaning">Political Leaning</option>
+        <option value="DEI Friendliness">DEI Friendliness</option>
+        <option value="Wokeness">Wokeness</option>
+        <option value="Environmental Impact">Environmental Impact</option>
+        <option value="Immigration Support">Immigration Support</option>
+        <option value="Technology Innovation">Technology Innovation</option>
+        <option value="Financial Contributions">Financial Contributions</option>
+      </select>
     </div>
   </div>
 
-  <div class="refresh-section">
-    <div class="setting-label">Manual Component Refresh</div>
-    <div class="refresh-description">
+  <!-- Tab 2: Component Controls -->
+  <div class="tab-panel" id="tab-controls">
+    <div class="button-description">
       If the component doesn't appear on a page, use this button to manually trigger the insertion after the page has fully loaded.
     </div>
-    <button class="refresh-button" id="refreshButton">
+    <button class="action-button refresh-button" id="refreshButton">
       🔄 Force Refresh Component
     </button>
-    
+
+    <div class="button-description">
+      Show the component in a full-screen overlay. If this is the odd Amazon product page that won't allow the component to appear, this is a fallback option.
+    </div>
+    <button class="action-button overlay-button" id="overlayButton">
+      Force Component Overlay Display
+    </button>
+
     <div class="debug-section" id="debugSection" style="display: none;">
       <div class="debug-title">Debug Info:</div>
       <div class="debug-info" id="debugInfo">No debug data available</div>
     </div>
   </div>
-  
+
   <div class="status success" id="status" style="display: none;">
     Settings saved successfully!
   </div>
-  
+
   <script src="popup.js"></script>
 </body>
-</html> -->
+</html>

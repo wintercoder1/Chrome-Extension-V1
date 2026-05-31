@@ -1,12 +1,13 @@
 // TODO: Make this work the more traditonal React way with hooks.
 
-const CipherAIComponent = ({ companyName, brandName = null, politicalData = null, isLoading = false }) => {
+const CipherAIComponent = ({ companyName, brandName = null, politicalData = null, isLoading = false, category = 'Political Leaning' }) => {
     // Default data structure for when API fails or no data
     const defaultPoliticalData = {
         lean: 'Unknown',
         score: 'N/A',
         description: 'Political leaning information is not available for this company.',
-        citationUrl: `Financial Contributions Overview for ${companyName}`
+        citationUrl: `Financial Contributions Overview for ${companyName}`,
+        queryType: 'Political Leaning'
     };
 
     console.log(`!! Now rendering component with brand name: ${brandName} and company name: ${companyName}`)
@@ -33,27 +34,22 @@ const CipherAIComponent = ({ companyName, brandName = null, politicalData = null
             { className: 'tilt-ai-container loading' },
             React.createElement(window.TiltAIHeader),
             React.createElement('div', { className: 'tilt-ai-content' },
-                React.createElement('div', { className: 'loading-placeholder' }, 'Loading political analysis...')
+                React.createElement('div', { className: 'loading-placeholder' }, `Loading ${category} analysis...`)
             )
         );
     }
 
+    const BASE_URL = 'https://cipher-ai.io';
+
     const handleCitationClickFinancialContributionsOverview = (e) => {
         e.preventDefault();
-        // Placeholder URL - replace with your actual endpoint later
-        // Dev
-        // const BASE_URL = 'http://localhost:5173'
-        // Prod
-        const BASE_URL = 'https://wintercoder1.github.io'
-        // Financial contributions overview URl.
-        const url = `${BASE_URL}/Cool-Project-Frontend#/organization/financial-contributions/${encodeURIComponent(companyName)}`
+        const url = `${BASE_URL}/organization/financial_contributions/${encodeURIComponent(companyName)}`;
         window.open(url, '_blank');
     };
 
     const handleOpenLink = (e) => {
         e.preventDefault();
-        const BASE_URL = 'https://wintercoder1.github.io';
-        const url = `${BASE_URL}/Cool-Project-Frontend/#/organization/political_leaning/${encodeURIComponent(companyName)}`;
+        const url = `${BASE_URL}/organization/political_leaning/${encodeURIComponent(companyName)}`;
         window.open(url, '_blank');
     };
     const handleCitationClickWikipedia = (e) => {
@@ -68,10 +64,7 @@ const CipherAIComponent = ({ companyName, brandName = null, politicalData = null
         React.createElement(window.TiltAIHeader),
         React.createElement('div', { className: 'tilt-ai-content' },
             React.createElement('div', { className: 'overview-header' },
-                // React.createElement('h2', null, 'Political Leaning Overview for '),
-                // React.createElement('span', { className: 'company-name-highlight' }, companyName)
-                React.createElement('h2', null, 'Political Leaning Overview for '),
-                // React.createElement('span', null, companyName)
+                React.createElement('h2', null, `${data.queryType} Overview for `),
                 React.createElement('h2', null, title_overview_name)
             ),
             React.createElement('div', { className: 'lean-section' },

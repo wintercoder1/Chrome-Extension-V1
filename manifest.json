@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Cipher AI - Navigate the world of online shopping.",
-  "version": "1.0.4",
-  "description": "Displays additional info that tells you about the companies you are buying from on Amazon. Displays product page directly.",
+  "name": "Cipher AI - Decode the world",
+  "version": "1.1.1",
+  "description": "Displays additional info that tells you about the companies you are buying from on Amazon.",
   
   "permissions": [
     "activeTab",
@@ -17,6 +17,7 @@
     "*://*.amazon.fr/*",
     "*://*.amazon.it/*",
     "*://*.amazon.es/*",
+    "https://cipher-ai.io/*",
     "https://wintercoder1.github.io/*",
     "https://compass-ai-internal-api.com/*",
     "http://localhost:8000/getPoliticalLeaning"

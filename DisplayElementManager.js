@@ -73,7 +73,7 @@ class  DisplayElementManager {
         return element
     }
 
-    createDisplayElementWithComponentCompass(brandInfo, ownerInfo = null, isLoading = false) {
+    createDisplayElementWithComponentCipher(brandInfo, ownerInfo = null, isLoading = false, category = 'Political Leaning') {
         // Extract company name from the brandInfo object
         let companyName = 'Loading...';
         
@@ -86,21 +86,22 @@ class  DisplayElementManager {
         const wrapperDiv = document.createElement('div');
         wrapperDiv.className = 'brand-owner-info-container';
         
-        // Check if window.CompassAIComponent exists
-        console.log('window.CompassAIComponent:', window.CompassAIComponent);
+        // Check if window.CipherAIComponent exists
+        console.log('window.CipherAIComponent:', window.CipherAIComponent);
         
-        if (!window.CompassAIComponent) {
-            console.error('CompassAIComponent is not loaded! Make sure CompassAIComponent.js is included in your manifest.');
-            wrapperDiv.innerHTML = '<div>Error: CompassAIComponent not loaded</div>';
+        if (!window.CipherAIComponent) {
+            console.error('CipherAIComponent is not loaded! Make sure CipherAIComponent.js is included in your manifest.');
+            wrapperDiv.innerHTML = '<div>Error: CipherAIComponent not loaded</div>';
             return wrapperDiv;
         }
         
         console.log('Creating component with companyName:', companyName); // Debug line
         
         // Create the React element
-        const component = React.createElement(window.CompassAIComponent, { 
-            companyName: companyName,  // Make sure this is always a string
-            isLoading: isLoading 
+        const component = React.createElement(window.CipherAIComponent, {
+            companyName: companyName,
+            isLoading: isLoading,
+            category: category
         });
         
         // Render the React component into the wrapper
@@ -125,16 +126,16 @@ class  DisplayElementManager {
         wrapperDiv.className = 'brand-owner-info-container';
         
         // Check if component exists
-        if (!window.CompassAIWithPaygateComponent) {
-            console.error('CompassAIWithPaygateComponent is not loaded!');
-            wrapperDiv.innerHTML = '<div>Error: CompassAIWithPaygateComponent not loaded</div>';
+        if (!window.CipherAIWithPaygateComponent) {
+            console.error('CipherAIWithPaygateComponent is not loaded!');
+            wrapperDiv.innerHTML = '<div>Error: CipherAIWithPaygateComponent not loaded</div>';
             return wrapperDiv;
         }
         
         console.log('Creating paygate component for:', companyName, 'isProUser:', isProUser);
         
         // Create the React element with paygate enabled
-        const component = React.createElement(window.CompassAIWithPaygateComponent, { 
+        const component = React.createElement(window.CipherAIWithPaygateComponent, { 
             companyName: companyName,
             isLoading: isLoading,
             showPaygate: true,  // Always show paygate when using this method
@@ -147,7 +148,7 @@ class  DisplayElementManager {
         return wrapperDiv;
     }
 
-    async updateDisplayElementCompass(productPageInfo, ownerInfo, politicalData = null) {
+    async updateDisplayElementCipher(productPageInfo, ownerInfo, politicalData = null) {
         if (!this.displayElement) {
             console.log('Tried to update display element, but could not find a display element to update.')
             return;
@@ -155,8 +156,8 @@ class  DisplayElementManager {
 
         const companyName= productPageInfo.manufacturer;
         const brandName = productPageInfo.brand;
-        // console.log(`|| updateDisplayElementCompass: passed in company name: ${companyName}`);
-        // console.log(`|| updateDisplayElementCompass: passed in brand name: ${brandName}`);    
+        // console.log(`|| updateDisplayElementCipher: passed in company name: ${companyName}`);
+        // console.log(`|| updateDisplayElementCipher: passed in brand name: ${brandName}`);    
  
         // If no political data provided and we have a valid company name, fetch it
         if (!politicalData && companyName && companyName !== 'Unknown Company' && companyName !== 'no-info-found') {
@@ -165,7 +166,7 @@ class  DisplayElementManager {
                 politicalData = await this.networkManager.fetchPoliticalLeaning(companyName);
                 console.log('Fetched political data:', politicalData);
             } catch (error) {
-                console.error('Error fetching political data in updateDisplayElementCompass:', error);
+                console.error('Error fetching political data in updateDisplayElementCipher:', error);
                 politicalData = null;
             }
         }
@@ -175,7 +176,7 @@ class  DisplayElementManager {
         // console.log(politicalData)
         // const created_with_financial_contributions = (politicalData && politicalData.created_with_financial_contributions_info) ? politicalData.created_with_financial_contributions_info : false
         // console.log(`|| Now with created_with_financial_contributions_info ${created_with_financial_contributions}`)
-        const component = React.createElement(window.CompassAIComponent, { 
+        const component = React.createElement(window.CipherAIComponent, { 
             companyName: companyName,
             brandName: brandName,
             politicalData: politicalData, // Pass the political data from API
@@ -335,7 +336,7 @@ class  DisplayElementManager {
         if (typeof ReactDOM !== 'undefined' && ReactDOM.render) {
             // Legacy ReactDOM.render (React < 18)
             ReactDOM.render(
-                React.createElement(window.CompassAIComponent, {
+                React.createElement(window.CipherAIComponent, {
                     companyName: companyName,
                     brandName: null,
                     politicalData: null,
@@ -347,7 +348,7 @@ class  DisplayElementManager {
             // Modern ReactDOM.createRoot (React 18+)
             const root = ReactDOM.createRoot(reactContainer);
             root.render(
-                React.createElement(window.CompassAIComponent, {
+                React.createElement(window.CipherAIComponent, {
                     companyName: companyName,
                     brandName: null,
                     politicalData: null,
@@ -444,7 +445,7 @@ class  DisplayElementManager {
                 if (typeof ReactDOM !== 'undefined' && ReactDOM.render) {
                     // Legacy ReactDOM.render (React < 18)
                     ReactDOM.render(
-                        React.createElement(window.CompassAIComponent, {
+                        React.createElement(window.CipherAIComponent, {
                             companyName: companyName,
                             brandName: brandName,
                             politicalData: politicalData,
@@ -456,7 +457,7 @@ class  DisplayElementManager {
                     // Modern ReactDOM.createRoot (React 18+)
                     const root = reactContainer._reactRoot || ReactDOM.createRoot(reactContainer);
                     root.render(
-                        React.createElement(window.CompassAIComponent, {
+                        React.createElement(window.CipherAIComponent, {
                             companyName: companyName,
                             brandName: brandName,
                             politicalData: politicalData,
@@ -688,7 +689,7 @@ class  DisplayElementManager {
     }
 
     // Add this method to the DisplayElementManager class.
-    // updateDisplayElementWithPayGateCompass() {
+    // updateDisplayElementWithPayGateCipher() {
     //     if (!this.displayElement) {
     //         console.log('Tried to update display element with paygate, but could not find a display element to update.');
     //         return;
@@ -778,7 +779,7 @@ class  DisplayElementManager {
 
     //     console.log('🚧 PAYGATE: Paygate overlay created and inserted');
     // }
-    // updateDisplayElementWithPayGateCompass() {
+    // updateDisplayElementWithPayGateCipher() {
     //     if (!this.displayElement) {
     //         console.log('Tried to update display element with paygate, but could not find a display element to update.');
     //         return;
@@ -790,14 +791,14 @@ class  DisplayElementManager {
     //     const isProUser = this.checkProUserStatus();
         
     //     // Create the paygate component using React (same pattern as normal component)
-    //     if (!window.CompassAIComponent) {
-    //         console.error('CompassAIComponent is not loaded! Falling back to HTML paygate.');
+    //     if (!window.CipherAIComponent) {
+    //         console.error('CipherAIComponent is not loaded! Falling back to HTML paygate.');
     //         this.createHTMLPaygate(isProUser);
     //         return;
     //     }
         
     //     // Create React paygate component
-    //     const paygateComponent = React.createElement(window.CompassAIComponent, {
+    //     const paygateComponent = React.createElement(window.CipherAIComponent, {
     //         companyName: 'Rate Limit Reached',
     //         brandName: null,
     //         politicalData: null,
@@ -817,7 +818,7 @@ class  DisplayElementManager {
 
     //     console.log('🚧 PAYGATE: React paygate component rendered in-place');
     // }
-    updateDisplayElementWithPayGateCompass() {
+    updateDisplayElementWithPayGateCipher() {
         if (!this.displayElement) {
             console.log('Tried to update display element with paygate, but could not find a display element to update.');
             return;

@@ -371,8 +371,6 @@ class AmazonBrandTracker {
         // console.log('Will update component now.');
         // this.displayElementManager.updateDisplayElementCipher(productPageInfo, null, politicalData);
             
-
-
         // When user hits the paywall - free user needs to upgrade
         const paygateElement = this.displayElementManager.createDisplayElementWithPaygate(displayInfo, null, false, false);
         this.displayElementManager.insertDisplayElement(paygateElement);
@@ -381,10 +379,14 @@ class AmazonBrandTracker {
     }
 
     
+    // Read category before creating loading element so the label is correct
+    const { analysisCategory: initialCategory } = await chrome.storage.sync.get(['analysisCategory']);
+    const loadingCategory = initialCategory || 'Political Leaning';
+
     // First we create the component. It will initially be in its loading state.
     console.log('Now displaying extension component...');
     const displayInfo = {'type': 'product_with_manufacturer'};
-    const loadingElement = this.displayElementManager.createDisplayElementWithComponentCipher(displayInfo, null, true);
+    const loadingElement = this.displayElementManager.createDisplayElementWithComponentCipher(displayInfo, null, true, loadingCategory);
     loadingElement.classList.add('loading');
     this.displayElementManager.insertDisplayElement(loadingElement);
     
@@ -434,8 +436,7 @@ class AmazonBrandTracker {
     // If we have a valid company name, fetch analysis data
     if (companyName && companyName !== 'Unknown Company' && companyName !== 'no-info-found') {
         try {
-            const { analysisCategory } = await chrome.storage.sync.get(['analysisCategory']);
-            const category = analysisCategory || 'Political Leaning';
+            const category = loadingCategory;
             console.log(`Analysis fetch initiated [${category}]:`, companyName);
             const politicalData = await this.networkManager.fetchAnalysis(companyName, category);
             console.log('Network call complete!!!');
@@ -515,8 +516,6 @@ class AmazonBrandTracker {
     }
   }
 
-  
-
   async refreshWithCategory(category) {
     const displayElement = this.displayElementManager?.displayElement;
 
@@ -532,7 +531,8 @@ class AmazonBrandTracker {
       React.createElement(window.CipherAIComponent, {
         companyName: this.companyName,
         brandName: this.brandName,
-        isLoading: true
+        isLoading: true,
+        category: category
       }),
       displayElement
     );
