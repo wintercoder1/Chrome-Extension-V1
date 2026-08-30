@@ -1,0 +1,20 @@
+.cipher-company-noun {
+  background-color: rgba(37, 99, 235, 0.38);
+  border-radius: 2px;
+  padding: 0 1px;
+  cursor: pointer;
+}
+
+.cipher-subject-noun {
+  background-color: rgba(168, 85, 247, 0.35);
+  border-radius: 2px;
+  padding: 0 1px;
+  cursor: pointer;
+}
+
+.cipher-user-selection {
+  background-color: rgba(234, 138, 0, 0.38);
+  border-radius: 2px;
+  padding: 0 1px;
+  cursor: pointer;
+}
