@@ -1,0 +1,270 @@
+/* Tilt AI Component Styles */
+/* .tilt-ai-container {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin: 16px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    max-width: 600px;
+} */
+
+.brand-owner-info-container {
+    background: white !important;
+    border-radius: 0px;
+    margin: 0;
+    border: none !important;
+}
+
+
+.tilt-ai-container {
+    background: white !important;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin: 16px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    max-width: 600px;
+    position: relative;
+    z-index: 1;
+}
+
+.tilt-ai-header {
+    /* background: #f8f9fa; */
+    background: white;
+    padding: 12px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    border-radius: 8px 8px 0 0;
+}
+
+.tilt-ai-brand {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.tilt-ai-content {
+    padding: 20px;
+}
+
+.overview-header {
+    margin-bottom: 20px;
+}
+
+.overview-header h2 {
+    display: inline;
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.company-name-highlight {
+    background: #e91e63;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 24px;
+}
+
+.lean-section {
+    margin-bottom: 20px;
+}
+
+.lean-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.lean-label {
+    font-size: 16px;
+    color: #666;
+    font-weight: 500;
+}
+
+.lean-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #333;
+    margin-right: auto;
+}
+
+.rating-section {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-left: auto;
+}
+
+.rating-label {
+    font-size: 16px;
+    color: #666;
+    font-weight: 500;
+}
+
+.rating-score {
+    font-size: 48px;
+    font-weight: 700;
+    color: #333;
+    line-height: 1;
+}
+
+.description-section {
+    margin-bottom: 20px;
+}
+
+.political-description {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #444;
+    margin: 0;
+    text-align: justify;
+}
+
+.citations-section {
+    border-top: 1px solid #e0e0e0;
+    padding-top: 16px;
+}
+
+.citations-header {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 8px 0;
+}
+
+.citation-link {
+    color: #1976d2;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.citation-link:hover {
+    text-decoration: underline;
+}
+
+/* Non-political-leaning header: title + rating on one line */
+.header-rating-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.header-rating-title {
+    flex: 4;
+}
+
+.header-rating-title h2 {
+    display: inline;
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.header-rating-score {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    padding-top: 2px;
+}
+
+.rating-score-inline {
+    font-size: 30px;
+    font-weight: 700;
+    color: #333;
+    line-height: 1;
+}
+
+.open-link-section {
+    border-top: 1px solid #e0e0e0;
+    padding-top: 12px;
+    margin-top: 12px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.open-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #555;
+    background: transparent;
+    border: 1px solid #d0d0d0;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    font-family: inherit;
+}
+
+.open-link-btn:hover {
+    border-color: #888;
+    color: #222;
+}
+
+/* Loading states */
+.tilt-ai-container.loading {
+    opacity: 0.7;
+}
+
+.loading-placeholder {
+    background: #f0f0f0;
+    border-radius: 4px;
+    padding: 12px;
+    color: #666;
+    text-align: center;
+    font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .tilt-ai-container {
+        margin: 8px;
+        max-width: none;
+    }
+    
+    .lean-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .rating-section {
+        margin-left: 0;
+    }
+    
+    .overview-header h2,
+    .company-name-highlight {
+        font-size: 20px;
+    }
+    
+    .lean-value {
+        font-size: 28px;
+    }
+    
+    .rating-score {
+        font-size: 40px;
+    }
+
+    .citation-link {
+        color: #1976d2;
+        text-decoration: none;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .citation-link:hover {
+        text-decoration: underline;
+        color: #1565c0;
+    }
+}
