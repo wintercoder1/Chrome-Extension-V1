@@ -181,9 +181,9 @@
   </div>
 
   <div class="tab-bar">
-    <button class="tab-btn active" data-tab="category">Analysis Category</button>
+    <button class="tab-btn active" data-tab="category">Category</button>
     <button class="tab-btn" data-tab="highlights">Highlights</button>
-    <button class="tab-btn" data-tab="controls">Component Controls</button>
+    <button class="tab-btn" data-tab="display">Display</button>
   </div>
 
   <!-- Tab 1: Analysis Category -->
@@ -231,25 +231,40 @@
     <p class="coming-soon">Amazon highlight settings coming soon.</p>
   </div>
 
-  <!-- Tab 3: Component Controls -->
-  <div class="tab-panel" id="tab-controls">
-    <div class="button-description">
-      If the component doesn't appear on a page, use this button to manually trigger the insertion after the page has fully loaded.
+  <!-- Tab 3: Display -->
+  <div class="tab-panel" id="tab-display">
+    <div class="section-label">Analysis Display</div>
+    <div class="radio-group">
+      <label class="radio-label">
+        <input type="radio" name="displayMode" value="overlay" checked>
+        Floating overlay (default)
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="displayMode" value="sidebar">
+        Fixed sidebar panel
+      </label>
     </div>
-    <button class="action-button refresh-button" id="refreshButton">
-      🔄 Force Refresh Component
-    </button>
 
-    <div class="button-description">
-      Show the component in a full-screen overlay. If this is the odd Amazon product page that won't allow the component to appear, this is a fallback option.
-    </div>
-    <button class="action-button overlay-button" id="overlayButton">
-      Force Component Overlay Display
-    </button>
+    <hr class="section-divider">
 
-    <div class="debug-section" id="debugSection" style="display: none;">
-      <div class="debug-title">Debug Info:</div>
-      <div class="debug-info" id="debugInfo">No debug data available</div>
+    <div class="section-label">Font Size</div>
+    <div class="radio-group">
+      <label class="radio-label">
+        <input type="radio" name="contentFontSize" value="sm">
+        Small
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="contentFontSize" value="md" checked>
+        Default
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="contentFontSize" value="lg">
+        Large
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="contentFontSize" value="xl">
+        Extra Large
+      </label>
     </div>
   </div>
 
