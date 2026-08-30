@@ -1,13 +1,18 @@
 {
   "manifest_version": 3,
   "name": "Cipher AI - Decode the Corporate World",
-  "version": "1.2",
+  "version": "2.0",
   "description": "Info about financial contributions of companies and more, backed with public data.",
   
   "permissions": [
     "activeTab",
-    "storage"
+    "storage",
+    "contextMenus"
   ],
+
+  "background": {
+    "service_worker": "background.js"
+  },
   
   "host_permissions": [
     "<all_urls>",
@@ -47,7 +52,9 @@
         "*://*.amazon.de/*",
         "*://*.amazon.fr/*",
         "*://*.amazon.it/*",
-        "*://*.amazon.es/*"
+        "*://*.amazon.es/*",
+        "*://cipher-ai.io/*",
+        "*://*.cipher-ai.io/*"
       ],
       "js": ["lib/CompanyList.js", "lib/compromise.min.js", "SubjectHighlighter.js", "HoverPopup.js"],
       "css": ["subject-highlight.css"],
