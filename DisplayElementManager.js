@@ -928,25 +928,14 @@ class  DisplayElementManager {
     // Handle upgrade button click
     handleUpgrade() {
         console.log('🛒 PAYGATE: Upgrade button clicked');
-        
-        // You can integrate with Stripe, PayPal, or your payment processor here
-        // For now, just open a new tab to your pricing page
-        const upgradeUrl = 'https://your-website.com/upgrade'; // Replace with your actual URL
-        window.open(upgradeUrl, '_blank');
-        
-        // Optionally track the conversion attempt
+        window.open('https://cipher-ai.io/payment/signup', '_blank');
         this.trackConversionAttempt('upgrade_clicked');
     }
 
-    // Handle login button click  
+    // Handle login button click
     handleLogin() {
         console.log('🔐 PAYGATE: Login button clicked');
-        
-        // Open your login/authentication flow
-        const loginUrl = 'https://your-website.com/login'; // Replace with your actual URL
-        window.open(loginUrl, '_blank');
-        
-        // Optionally, you could implement a popup login flow instead
+        window.open('https://cipher-ai.io/payment/login', '_blank');
         this.trackConversionAttempt('login_clicked');
     }
 

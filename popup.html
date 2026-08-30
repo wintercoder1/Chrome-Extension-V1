@@ -80,6 +80,37 @@
       border-color: #007185;
     }
 
+    /* Highlights tab */
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin: 14px 0 8px;
+    }
+    .section-label:first-child { margin-top: 0; }
+    .radio-group { display: flex; flex-direction: column; gap: 8px; }
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #333;
+      cursor: pointer;
+    }
+    .radio-label input[type="radio"] { accent-color: #007185; }
+    .section-divider {
+      border: none;
+      border-top: 1px solid #e8e8e8;
+      margin: 14px 0;
+    }
+    .coming-soon {
+      font-size: 12px;
+      color: #aaa;
+      font-style: italic;
+    }
+
     /* Controls tab */
     .action-button {
       width: 100%;
@@ -151,6 +182,7 @@
 
   <div class="tab-bar">
     <button class="tab-btn active" data-tab="category">Analysis Category</button>
+    <button class="tab-btn" data-tab="highlights">Highlights</button>
     <button class="tab-btn" data-tab="controls">Component Controls</button>
   </div>
 
@@ -167,9 +199,39 @@
         <option value="Financial Contributions">Financial Contributions</option>
       </select>
     </div>
+    <div class="setting-group" style="margin-top:12px;">
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#555;cursor:pointer;">
+        <input type="checkbox" id="overlayDropdownToggle">
+        Show category selector in overlay
+      </label>
+    </div>
   </div>
 
-  <!-- Tab 2: Component Controls -->
+  <!-- Tab 2: Highlights -->
+  <div class="tab-panel" id="tab-highlights">
+    <div class="section-label">Open Internet</div>
+    <div class="radio-group">
+      <label class="radio-label">
+        <input type="radio" name="highlightMode" value="companies" checked>
+        Only highlight companies
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="highlightMode" value="all">
+        Highlight companies, people &amp; organizations
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="highlightMode" value="none">
+        Highlight nothing
+      </label>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="section-label">Amazon</div>
+    <p class="coming-soon">Amazon highlight settings coming soon.</p>
+  </div>
+
+  <!-- Tab 3: Component Controls -->
   <div class="tab-panel" id="tab-controls">
     <div class="button-description">
       If the component doesn't appear on a page, use this button to manually trigger the insertion after the page has fully loaded.

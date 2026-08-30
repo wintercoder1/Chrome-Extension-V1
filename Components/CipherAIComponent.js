@@ -60,24 +60,42 @@ const CipherAIComponent = ({ companyName, brandName = null, politicalData = null
         window.open(url, '_blank');
     };
 
-    return React.createElement('div', 
+    const isPoliticalLeaning = data.queryType === 'Political Leaning';
+
+    return React.createElement('div',
         { className: 'tilt-ai-container' },
         React.createElement(window.TiltAIHeader),
         React.createElement('div', { className: 'tilt-ai-content' },
-            React.createElement('div', { className: 'overview-header' },
-                React.createElement('h2', null, `${data.queryType} Overview for `),
-                React.createElement('h2', null, title_overview_name)
-            ),
-            React.createElement('div', { className: 'lean-section' },
-                React.createElement('div', { className: 'lean-row' },
-                    React.createElement('span', { className: 'lean-label' }, 'Lean:'),
-                    React.createElement('span', { className: 'lean-value' }, data.lean),
-                    React.createElement('div', { className: 'rating-section' },
-                        React.createElement('span', { className: 'rating-label' }, 'Rating:'),
-                        React.createElement('span', { className: 'rating-score' }, data.score)
+
+            isPoliticalLeaning
+                // Political Leaning: title on its own line, Lean + Rating below
+                ? React.createElement(React.Fragment, null,
+                    React.createElement('div', { className: 'overview-header' },
+                        React.createElement('h2', null, `${data.queryType} Overview for `),
+                        React.createElement('h2', null, title_overview_name)
+                    ),
+                    React.createElement('div', { className: 'lean-section' },
+                        React.createElement('div', { className: 'lean-row' },
+                            React.createElement('span', { className: 'lean-label' }, 'Lean:'),
+                            React.createElement('span', { className: 'lean-value' }, data.lean),
+                            React.createElement('div', { className: 'rating-section' },
+                                React.createElement('span', { className: 'rating-label' }, 'Rating:'),
+                                React.createElement('span', { className: 'rating-score' }, data.score)
+                            )
+                        )
                     )
-                )
-            ),
+                  )
+                // All other categories: title (~80%) + rating (~20%) on one line
+                : React.createElement('div', { className: 'header-rating-row' },
+                    React.createElement('div', { className: 'header-rating-title' },
+                        React.createElement('h2', null, `${data.queryType} Overview for `),
+                        React.createElement('h2', null, title_overview_name)
+                    ),
+                    React.createElement('div', { className: 'header-rating-score' },
+                        React.createElement('span', { className: 'rating-label' }, 'Rating:'),
+                        React.createElement('span', { className: 'rating-score-inline' }, data.score)
+                    )
+                  ),
             React.createElement('div', { className: 'description-section' },
                 React.createElement('p', { className: 'political-description' }, description_context)
             ),

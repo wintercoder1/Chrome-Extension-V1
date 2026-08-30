@@ -6,12 +6,28 @@ document.addEventListener('DOMContentLoaded', async () => {
   const debugSection = document.getElementById('debugSection');
   const debugInfo = document.getElementById('debugInfo');
   const categorySelect = document.getElementById('categorySelect');
+  const overlayDropdownToggle = document.getElementById('overlayDropdownToggle');
 
   // Load current settings
-  const result = await chrome.storage.sync.get(['analysisCategory']);
+  const result = await chrome.storage.sync.get(['analysisCategory', 'showOverlayCategoryBtn', 'highlightMode']);
 
   // Set initial category dropdown value
   categorySelect.value = result.analysisCategory || 'Political Leaning';
+
+  // Highlight mode radios
+  const savedMode = result.highlightMode || 'companies';
+  document.querySelectorAll('input[name="highlightMode"]').forEach(radio => {
+    radio.checked = radio.value === savedMode;
+    radio.addEventListener('change', () => {
+      if (radio.checked) chrome.storage.sync.set({ highlightMode: radio.value });
+    });
+  });
+
+  // Set initial overlay dropdown toggle
+  overlayDropdownToggle.checked = result.showOverlayCategoryBtn === true;
+  overlayDropdownToggle.addEventListener('change', () => {
+    chrome.storage.sync.set({ showOverlayCategoryBtn: overlayDropdownToggle.checked });
+  });
 
   // Category change handler
   categorySelect.addEventListener('change', async () => {
