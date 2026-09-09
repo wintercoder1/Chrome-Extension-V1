@@ -28,12 +28,12 @@
       user-select: none;
     }
     #cipher-hover-popup .chp-header.dragging { cursor: grabbing; }
-    /* Popup-specific: category menu floats absolutely */
+    /* Popup-specific: category menu floats absolutely, full width */
     #cipher-hover-popup .chp-cat-menu {
       display: none;
       position: absolute;
+      left: -1px;
       right: -1px;
-      width: 70%;
       background: #fff;
       border: 1px solid #e0e0e0;
       border-top: none;
@@ -73,6 +73,19 @@
     }
     .chp-close:hover, .chp-cat-btn:hover { color: #333; }
     .chp-cat-btn { font-size: 11px; }
+    .chp-cat-section-hdr {
+      font-size: 10px;
+      font-weight: 700;
+      color: #aaa;
+      letter-spacing: 0.7px;
+      text-transform: uppercase;
+      padding: 10px 14px 4px;
+      user-select: none;
+    }
+    .chp-cat-section-divider {
+      border-top: 1px solid #e8e8e8;
+      margin: 4px 0;
+    }
     .chp-cat-opt {
       padding: 9px 14px;
       font-size: 13px;
@@ -82,9 +95,8 @@
     }
     .chp-cat-opt:hover { background: #f5f5f5; }
     .chp-cat-opt.active {
-      color: #1976d2;
-      font-weight: 600;
-      background: #f0f7ff;
+      font-weight: 700;
+      color: #1a1a1a;
     }
     .chp-body {
       padding: 16px;
@@ -257,16 +269,122 @@
       text-align: center;
       margin-top: 32px;
     }
-    /* Sidebar cat-menu is inline, not floating */
+    /* Sidebar cat-menu overlays the body, same as the popup */
     #cipher-sidebar .chp-cat-menu {
-      position: static;
-      width: 100%;
-      border-radius: 0;
-      box-shadow: none;
+      position: absolute;
+      left: 0;
+      right: 0;
+      background: #fff;
       border-top: 1px solid #e8e8e8;
       border-bottom: 1px solid #e0e0e0;
-      border-left: none;
-      border-right: none;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+      z-index: 10;
+    }
+
+    /* ── Leadership Demographics ──────────────────────────────── */
+    .chp-demo-caveat {
+      font-size: 11px;
+      color: #999;
+      margin-bottom: 12px;
+      font-style: italic;
+      line-height: 1.4;
+    }
+    .chp-demo-chart-area {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .chp-demo-legend { flex: 1; min-width: 0; }
+    .chp-demo-legend-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 5px;
+    }
+    .chp-demo-swatch {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .chp-demo-group-name {
+      flex: 1;
+      font-size: 12px;
+      color: #444;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .chp-demo-pct {
+      font-size: 12px;
+      font-weight: 600;
+      color: #222;
+      flex-shrink: 0;
+    }
+    .chp-demo-team-size {
+      font-size: 11px;
+      color: #888;
+      margin-bottom: 10px;
+    }
+
+    /* ── Financial Contributions ──────────────────────────────── */
+    .chp-contrib-stats { margin-bottom: 2px; }
+    .chp-contrib-stat-line {
+      font-size: 13px;
+      color: #333;
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+    .chp-contrib-bar {
+      height: 38px;
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      margin: 14px 0 10px;
+    }
+    .chp-contrib-bar-dem {
+      background: #6495ed;
+      height: 100%;
+    }
+    .chp-contrib-bar-rep {
+      flex: 1;
+      height: 100%;
+      background: #e05c5c;
+    }
+    .chp-contrib-legend {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #333;
+      margin-bottom: 12px;
+    }
+    .chp-contrib-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .chp-contrib-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .chp-contrib-preview {
+      font-size: 12px;
+      color: #555;
+      line-height: 1.5;
+      margin-bottom: 12px;
+      padding-left: 10px;
+      border-left: 3px solid #e0e0e0;
+    }
+    .chp-contrib-note {
+      font-size: 12px;
+      color: #888;
+      font-style: italic;
+      line-height: 1.4;
+      margin-bottom: 10px;
     }
   `;
 
@@ -277,8 +395,23 @@
   // ---------------------------------------------------------------------------
   // Constants
   // ---------------------------------------------------------------------------
+  // Toggle for local development vs production
+  // const BASE_API = 'http://localhost:8000';
   const BASE_API   = 'https://compass-ai-internal-api.com';
-  const ICON_URL   = chrome.runtime.getURL('icons/cipher_logo@128.png');
+
+  // Guard against "Extension context invalidated" after an extension reload
+  function isContextValid() {
+    try { return !!chrome.runtime.id; } catch (e) { return false; }
+  }
+  function safeGet(keys, cb) {
+    try { safeGet(keys, cb); } catch (e) {}
+  }
+  function safeSet(obj) {
+    try { safeSet(obj); } catch (e) {}
+  }
+
+  let ICON_URL = '';
+  try { ICON_URL = chrome.runtime.getURL('icons/cipher_logo@128.png'); } catch (e) {}
 
   // LRU cache — keyed by "term\x00category", max 20 entries across all categories.
   const MAX_CACHE = 40;
@@ -297,14 +430,34 @@
   }
 
   const ENDPOINT_MAP = {
-    'Political Leaning':       'getPoliticalLeaning',
-    'DEI Friendliness':        'getDEIFriendlinessScore',
-    'Wokeness':                'getWokenessScore',
-    'Environmental Impact':    'getEnvironmentalImpactScore',
-    'Immigration Support':     'getImmigrationSupportScore',
-    'Technology Innovation':   'getTechnologyInnovationScore',
-    'Financial Contributions': 'getPoliticalLeaningWithCitation',
+    'Political Leaning':        'getPoliticalLeaning',
+    'DEI Friendliness':         'getDEIFriendlinessScore',
+    'Wokeness':                 'getWokenessScore',
+    'Environmental Impact':     'getEnvironmentalImpactScore',
+    'Immigration Support':      'getImmigrationSupportScore',
+    'Technology Innovation':    'getTechnologyInnovationScore',
+    'Financial Contributions':  'getFinancialContributionsOverview',
+    'Leadership Demographics':  'getLeadershipDemographics',
   };
+
+  const CAT_SECTIONS = [
+    {
+      label: 'IMPORTANT ANALYSES',
+      cats: ['Financial Contributions', 'Leadership Demographics'],
+    },
+    {
+      label: 'FOR FUN ANALYSES',
+      cats: ['Political Leaning', 'DEI Friendliness', 'Wokeness', 'Environmental Impact', 'Immigration Support', 'Technology Innovation'],
+    },
+  ];
+
+  function buildCatMenuHtml() {
+    return CAT_SECTIONS.map((section, i) =>
+      (i > 0 ? '<div class="chp-cat-section-divider"></div>' : '') +
+      `<div class="chp-cat-section-hdr">${section.label}</div>` +
+      section.cats.map(cat => `<div class="chp-cat-opt" data-cat="${cat}">${cat}</div>`).join('')
+    ).join('');
+  }
 
   let currentCategory   = 'Political Leaning';
   let displayMode       = 'overlay'; // 'overlay' | 'sidebar'
@@ -327,23 +480,36 @@
   }
 
   // Load persisted settings and keep them in sync globally
-  chrome.storage.sync.get(['analysisCategory', 'displayMode', 'contentFontSize'], result => {
+  safeGet(['analysisCategory', 'displayMode', 'contentFontSize'], result => {
     if (result.analysisCategory) currentCategory = result.analysisCategory;
     if (result.displayMode)      displayMode     = result.displayMode;
     if (result.contentFontSize)  { contentFontSize = result.contentFontSize; applyFontSize(); }
   });
-  chrome.storage.onChanged.addListener((changes, area) => {
+  try { chrome.storage.onChanged.addListener((changes, area) => {
     if (area !== 'sync') return;
     if (changes.analysisCategory) {
       currentCategory = changes.analysisCategory.newValue;
     }
     if (changes.displayMode) {
       displayMode = changes.displayMode.newValue;
-      // Close whichever panel is currently open so the user starts fresh in the new mode
-      const popup   = document.getElementById('cipher-hover-popup');
-      const sidebar = document.getElementById('cipher-sidebar');
-      if (popup)   popup.style.display = 'none';
-      if (sidebar) sidebar.classList.add('chs-collapsed');
+      const popup = document.getElementById('cipher-hover-popup');
+      if (displayMode === 'sidebar') {
+        if (popup) popup.style.display = 'none';
+        const sidebar = getSidebar();
+        sidebar.style.display = '';
+        expandSidebar(sidebar);
+        // Re-show the last analysed term in the sidebar if there is one
+        if (lastTarget) {
+          const term = normalizeTerm(
+            lastTarget instanceof Element ? lastTarget.textContent : ''
+          );
+          if (term) loadIntoPanel(term, sidebar);
+        }
+      } else {
+        // Back to overlay — fully hide the sidebar
+        const sidebar = document.getElementById('cipher-sidebar');
+        if (sidebar) sidebar.style.display = 'none';
+      }
     }
     if (changes.contentFontSize) {
       contentFontSize = changes.contentFontSize.newValue;
@@ -356,7 +522,7 @@
         document.querySelector('#cipher-sidebar .chp-cat-btn'),
       ].forEach(btn => { if (btn) btn.style.display = show ? '' : 'none'; });
     }
-  });
+  }); } catch (e) {}
 
   // ---------------------------------------------------------------------------
   // Popup element (singleton, built once)
@@ -366,9 +532,7 @@
     popup.id = 'cipher-hover-popup';
 
     // Build the category menu options from ENDPOINT_MAP keys
-    const optionsHtml = Object.keys(ENDPOINT_MAP)
-      .map(cat => `<div class="chp-cat-opt" data-cat="${cat}">${cat}</div>`)
-      .join('');
+    const optionsHtml = buildCatMenuHtml();
 
     popup.innerHTML = `
       <div class="chp-header">
@@ -410,7 +574,7 @@
       opt.addEventListener('click', e => {
         e.stopPropagation();
         currentCategory = opt.dataset.cat;
-        chrome.storage.sync.set({ analysisCategory: currentCategory });
+        safeSet({ analysisCategory: currentCategory });
         closeCatMenu();
         if (lastTarget) showPopup(lastTarget); // re-fetch for the same term
       });
@@ -436,7 +600,7 @@
     popup.addEventListener('click', e => e.stopPropagation());
 
     // Apply initial visibility of the category button from settings
-    chrome.storage.sync.get(['showOverlayCategoryBtn'], result => {
+    safeGet(['showOverlayCategoryBtn'], result => {
       const show = result.showOverlayCategoryBtn === true; // default: hidden
       popup.querySelector('.chp-cat-btn').style.display = show ? '' : 'none';
     });
@@ -456,6 +620,7 @@
   function buildCatMenuHandlers(container) {
     const menu = container.querySelector('.chp-cat-menu');
     function openCatMenu() {
+      menu.style.top = container.querySelector('.chp-header').offsetHeight + 'px';
       menu.querySelectorAll('.chp-cat-opt').forEach(opt => {
         opt.classList.toggle('active', opt.dataset.cat === currentCategory);
       });
@@ -471,7 +636,7 @@
       opt.addEventListener('click', e => {
         e.stopPropagation();
         currentCategory = opt.dataset.cat;
-        chrome.storage.sync.set({ analysisCategory: currentCategory });
+        safeSet({ analysisCategory: currentCategory });
         closeCatMenu();
         if (lastTarget) showPopup(lastTarget);
       });
@@ -485,9 +650,7 @@
     sidebar.id = 'cipher-sidebar';
     sidebar.classList.add('chs-collapsed'); // start collapsed until first analysis
 
-    const optionsHtml = Object.keys(ENDPOINT_MAP)
-      .map(cat => `<div class="chp-cat-opt" data-cat="${cat}">${cat}</div>`)
-      .join('');
+    const optionsHtml = buildCatMenuHtml();
 
     sidebar.innerHTML = `
       <div class="chp-header">
@@ -523,7 +686,7 @@
     buildCatMenuHandlers(sidebar);
     sidebar.addEventListener('click', e => e.stopPropagation());
 
-    chrome.storage.sync.get(['showOverlayCategoryBtn'], result => {
+    safeGet(['showOverlayCategoryBtn'], result => {
       const show = result.showOverlayCategoryBtn === true;
       sidebar.querySelector('.chp-cat-btn').style.display = show ? '' : 'none';
     });
@@ -578,6 +741,7 @@
   // targetEl: Element or DOMRect; termOverride: optional string
   // ---------------------------------------------------------------------------
   function showPopup(targetEl, termOverride) {
+    if (!isContextValid()) return;
     if (currentController) { currentController.abort(); currentController = null; }
 
     lastTarget = (targetEl instanceof Element) ? targetEl : null;
@@ -681,27 +845,82 @@
     const cached = cacheGet(cacheKey);
     if (cached !== undefined) return cached;
     try {
-      const endpoint = ENDPOINT_MAP[currentCategory] || 'getPoliticalLeaning';
-      const res = await fetch(
-        `${BASE_API}/${endpoint}/${encodeURIComponent(term)}`,
-        { method: 'GET', headers: { 'Content-Type': 'application/json' }, signal }
-      );
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const raw = await res.json();
-      const id = raw.id ?? raw.response?.id ?? null;
-      const data = {
-        lean:         String(raw.lean    ?? raw.response?.lean    ?? 'Unknown'),
-        score:        String(raw.rating  ?? raw.response?.rating  ?? 'N/A'),
-        description:  String(raw.context ?? raw.response?.context ?? 'No information available.'),
-        withFinancial: !!(raw.created_with_financial_contributions_info
-                        ?? raw.response?.created_with_financial_contributions_info),
-        id:           id != null ? String(id) : null,
-      };
+      let data;
+      if (currentCategory === 'Financial Contributions') {
+        // Two parallel fetches — no shared single-fetch preamble needed
+        const safeJson = url =>
+          fetch(url, { signal })
+            .then(r => r.ok ? r.json() : null)
+            .catch(e => { if (e.name === 'AbortError') throw e; return null; });
+
+        const [pcJson, qtJson] = await Promise.all([
+          safeJson(`${BASE_API}/getFinancialContributionsPercentContributionsOnly/${encodeURIComponent(term)}`),
+          safeJson(`${BASE_API}/getFinancialContributionsQuickTextOnly/${encodeURIComponent(term)}`),
+        ]);
+
+        const pc = pcJson?.percent_contributions || pcJson?.response?.percent_contributions || {};
+        const pcId = pcJson?.id != null ? String(pcJson.id) : null;
+        const qtId = qtJson?.id != null ? String(qtJson.id) : null;
+        const quickText = qtJson?.text || qtJson?.quick_text || qtJson?.summary
+                       || qtJson?.fec_financial_contributions_quick_text || null;
+
+        data = {
+          type:            'financial_contributions',
+          total:           pc.total_contributions || 0,
+          to_democrats:    pc.total_to_democrats || 0,
+          to_republicans:  pc.total_to_republicans || 0,
+          pct_democrats:   pc.percent_to_democrats || 0,
+          pct_republicans: pc.percent_to_republicans || 0,
+          quickText:       quickText,
+          id:              pcId ?? qtId,  // percent-contributions id wins; falls back to quick-text id
+          error:           false,
+        };
+      } else {
+        const endpoint = ENDPOINT_MAP[currentCategory] || 'getPoliticalLeaning';
+        const res = await fetch(
+          `${BASE_API}/${endpoint}/${encodeURIComponent(term)}`,
+          { method: 'GET', headers: { 'Content-Type': 'application/json' }, signal }
+        );
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const raw = await res.json();
+
+        if (currentCategory === 'Leadership Demographics') {
+          const dem = raw.demographics || {};
+          const eth = dem.estimated_ethnicity || {};
+          data = {
+            type:             'leadership_demographics',
+            team_size:        dem.team_size || raw.officer_count || 0,
+            groups:           (eth.groups || []).filter(g => g.percent > 0),
+            basis:            eth.basis || '',
+            is_estimate:      eth.is_estimate !== false,
+            company_page_url: raw.company_page_url || dem.company_page_url || null,
+            id:               raw.id != null ? String(raw.id) : null,
+          };
+        } else {
+          const id = raw.id ?? raw.response?.id ?? null;
+          console.log('[CipherAI] raw response keys:', Object.keys(raw), '| id:', id, '| raw.id:', raw.id, '| raw.response?.id:', raw.response?.id);
+          data = {
+            lean:         String(raw.lean    ?? raw.response?.lean    ?? 'Unknown'),
+            score:        String(raw.rating  ?? raw.response?.rating  ?? 'N/A'),
+            description:  String(raw.context ?? raw.response?.context ?? 'No information available.'),
+            withFinancial: !!(raw.created_with_financial_contributions_info
+                            ?? raw.response?.created_with_financial_contributions_info),
+            id:           id != null ? String(id) : null,
+          };
+        }
+      }
       cacheSet(cacheKey, data);
       return data;
     } catch (err) {
       if (err.name === 'AbortError') throw err; // let showPopup's .catch handle it; don't cache
-      const fallback = { lean: 'Unknown', score: 'N/A', description: 'Analysis unavailable for this term.', withFinancial: false, id: null };
+      let fallback;
+      if (currentCategory === 'Leadership Demographics') {
+        fallback = { type: 'leadership_demographics', groups: [], basis: '', is_estimate: true, company_page_url: null, id: null };
+      } else if (currentCategory === 'Financial Contributions') {
+        fallback = { type: 'financial_contributions', total: 0, to_democrats: 0, to_republicans: 0, pct_democrats: 0, pct_republicans: 0, id: null, error: true };
+      } else {
+        fallback = { lean: 'Unknown', score: 'N/A', description: 'Analysis unavailable for this term.', withFinancial: false, id: null };
+      }
       cacheSet(cacheKey, fallback);
       return fallback;
     }
@@ -716,7 +935,167 @@
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
+  const DEMO_COLORS = [
+    '#4e79a7', '#f28e2b', '#e15759', '#76b7b2',
+    '#59a14f', '#edc948', '#b07aa1', '#9c755f',
+  ];
+
+  function buildPieChart(groups, size) {
+    size = size || 110;
+    const cx = size / 2, cy = size / 2, r = size / 2 - 3;
+    if (groups.length === 0) return '';
+    if (groups.length === 1) {
+      return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><circle cx="${cx}" cy="${cy}" r="${r}" fill="${DEMO_COLORS[0]}"/></svg>`;
+    }
+    const total = groups.reduce((s, g) => s + g.percent, 0) || 100;
+    let paths = '';
+    let angle = -Math.PI / 2;
+    groups.forEach((g, i) => {
+      if (g.percent <= 0) return;
+      const sweep = (g.percent / total) * 2 * Math.PI;
+      const end = angle + sweep;
+      const x1 = cx + r * Math.cos(angle), y1 = cy + r * Math.sin(angle);
+      const x2 = cx + r * Math.cos(end),   y2 = cy + r * Math.sin(end);
+      paths += `<path d="M${cx},${cy} L${x1.toFixed(2)},${y1.toFixed(2)} A${r},${r} 0 ${sweep > Math.PI ? 1 : 0},1 ${x2.toFixed(2)},${y2.toFixed(2)} Z" fill="${DEMO_COLORS[i % DEMO_COLORS.length]}"/>`;
+      angle = end;
+    });
+    return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${paths}</svg>`;
+  }
+
+  function formatDollars(n) {
+    return '$' + Math.round(n).toLocaleString('en-US');
+  }
+
+  function renderFinancialContributions(popup, term, data) {
+    const content = popup.querySelector('.chp-content');
+    const idSuffix = data.id ? `?id=${encodeURIComponent(data.id)}` : '';
+    const siteUrl = `https://cipher-ai.io/organization/financial_contributions/${encodeURIComponent(term)}${idSuffix}`;
+
+    if (data.error || !data.total) {
+      content.innerHTML = `
+        <div class="chp-overview-title">Financial Contributions for <strong>${escHtml(term)}</strong></div>
+        <div class="chp-description">No financial contribution data available for this term.</div>
+      `;
+      popup.querySelector('.chp-loading').style.display = 'none';
+      return;
+    }
+
+    // Normalize Democrat/Republican percentages to fill 100% of bar
+    const sum = (data.pct_democrats || 0) + (data.pct_republicans || 0);
+    const demWidth = sum > 0 ? ((data.pct_democrats / sum) * 100).toFixed(2) : 50;
+
+    const openBtnSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+      <polyline points="15 3 21 3 21 9"/>
+      <line x1="10" y1="14" x2="21" y2="3"/>
+    </svg>`;
+
+    content.innerHTML = `
+      <div class="chp-overview-title">Political Contributions for <strong>${escHtml(term)}</strong></div>
+      <div class="chp-contrib-stats">
+        <div class="chp-contrib-stat-line">Total Contributions: ${escHtml(formatDollars(data.total))}</div>
+        <div class="chp-contrib-stat-line">To Republicans: ${escHtml(formatDollars(data.to_republicans))} (${data.pct_republicans.toFixed(2)}%)</div>
+        <div class="chp-contrib-stat-line">To Democrats: ${escHtml(formatDollars(data.to_democrats))} (${data.pct_democrats.toFixed(2)}%)</div>
+      </div>
+      <div class="chp-contrib-bar">
+        <div class="chp-contrib-bar-dem" style="width:${demWidth}%"></div>
+        <div class="chp-contrib-bar-rep"></div>
+      </div>
+      <div class="chp-contrib-legend">
+        <div class="chp-contrib-legend-item">
+          <span class="chp-contrib-dot" style="background:#6495ed"></span>
+          <span>Democrats</span>
+        </div>
+        <div class="chp-contrib-legend-item">
+          <span class="chp-contrib-dot" style="background:#e05c5c"></span>
+          <span>Republicans</span>
+        </div>
+      </div>
+      <div class="chp-contrib-note">This financial information is based on Federal Election Commission filings from the 2024 election cycle.</div>
+      <div class="chp-contrib-note">Full financial contributions analysis available on <a href="#" class="chp-citation-link chp-contrib-site-link">cipher-ai.io ↗</a></div>
+      <div class="chp-footer">
+        <button class="chp-open-btn" title="Open on Cipher AI">${openBtnSvg}</button>
+      </div>
+    `;
+
+    content.querySelector('.chp-open-btn').addEventListener('click', e => {
+      e.preventDefault();
+      window.open(siteUrl, '_blank');
+    });
+    content.querySelector('.chp-contrib-site-link').addEventListener('click', e => {
+      e.preventDefault();
+      window.open(siteUrl, '_blank');
+    });
+
+    popup.querySelector('.chp-loading').style.display = 'none';
+  }
+
+  function renderLeadershipDemographics(popup, term, data) {
+    const content = popup.querySelector('.chp-content');
+    if (!data.groups || data.groups.length === 0) {
+      content.innerHTML = `
+        <div class="chp-overview-title">Leadership Demographics for <strong>${escHtml(term)}</strong></div>
+        <div class="chp-description">No demographics data available for this term.</div>
+      `;
+      popup.querySelector('.chp-loading').style.display = 'none';
+      return;
+    }
+    const idSuffix = data.id ? `?id=${encodeURIComponent(data.id)}` : '';
+    const legendHtml = data.groups.map((g, i) => `
+      <div class="chp-demo-legend-row">
+        <span class="chp-demo-swatch" style="background:${DEMO_COLORS[i % DEMO_COLORS.length]}"></span>
+        <span class="chp-demo-group-name">${escHtml(g.group)}</span>
+        <span class="chp-demo-pct">${g.percent}%</span>
+      </div>`).join('');
+
+    content.innerHTML = `
+      <div class="chp-overview-title">Leadership Demographics for <strong>${escHtml(term)}</strong></div>
+      ${data.team_size ? `<div class="chp-demo-team-size">C-suite team: ${escHtml(String(data.team_size))} officer${data.team_size !== 1 ? 's' : ''}</div>` : ''}
+      ${data.basis ? `<div class="chp-demo-caveat">${escHtml(data.basis)}${data.is_estimate ? ' · Estimated' : ''}</div>` : ''}
+      <div class="chp-demo-chart-area">
+        ${buildPieChart(data.groups)}
+        <div class="chp-demo-legend">${legendHtml}</div>
+      </div>
+      ${data.company_page_url ? `
+        <div class="chp-citations">
+          <span class="chp-citations-label">Source:</span>
+          <a href="#" class="chp-citation-link chp-demo-src-link">Company Leadership Page ↗</a>
+        </div>` : ''}
+      <div class="chp-footer">
+        <button class="chp-open-btn" title="Open on Cipher AI">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </button>
+      </div>
+    `;
+    content.querySelector('.chp-open-btn').addEventListener('click', e => {
+      e.preventDefault();
+      window.open(`https://cipher-ai.io/organization/leadership_demographics/${encodeURIComponent(term)}${idSuffix}`, '_blank');
+    });
+    const srcLink = content.querySelector('.chp-demo-src-link');
+    if (srcLink) {
+      srcLink.addEventListener('click', e => {
+        e.preventDefault();
+        window.open(data.company_page_url, '_blank');
+      });
+    }
+    popup.querySelector('.chp-loading').style.display = 'none';
+  }
+
   function renderContent(popup, term, data) {
+    if (data.type === 'leadership_demographics') {
+      renderLeadershipDemographics(popup, term, data);
+      return;
+    }
+    if (data.type === 'financial_contributions') {
+      renderFinancialContributions(popup, term, data);
+      return;
+    }
     const category = currentCategory;
     const slug     = category.toLowerCase().replace(/\s+/g, '_');
     const content  = popup.querySelector('.chp-content');
