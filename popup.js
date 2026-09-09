@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const result = await chrome.storage.sync.get([
     'analysisCategory', 'showOverlayCategoryBtn',
     'highlightMode', 'displayMode', 'contentFontSize',
+    'openInternetHighlightEnabled', 'amazonEnabled',
   ]);
 
   // Category dropdown
@@ -46,6 +47,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     radio.addEventListener('change', () => {
       if (radio.checked) chrome.storage.sync.set({ displayMode: radio.value });
     });
+  });
+
+  // Open internet highlight toggle (default: on)
+  const openInternetHighlightToggle = document.getElementById('openInternetHighlightToggle');
+  openInternetHighlightToggle.checked = result.openInternetHighlightEnabled !== false;
+  openInternetHighlightToggle.addEventListener('change', () => {
+    chrome.storage.sync.set({ openInternetHighlightEnabled: openInternetHighlightToggle.checked });
+  });
+
+  // Amazon enabled toggle (default: on)
+  const amazonEnabledToggle = document.getElementById('amazonEnabledToggle');
+  amazonEnabledToggle.checked = result.amazonEnabled !== false;
+  amazonEnabledToggle.addEventListener('change', () => {
+    chrome.storage.sync.set({ amazonEnabled: amazonEnabledToggle.checked });
   });
 
   // Font size radios

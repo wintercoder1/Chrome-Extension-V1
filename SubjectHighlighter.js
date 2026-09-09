@@ -99,15 +99,17 @@
   // ---------------------------------------------------------------------------
   // Highlight mode — read from extension settings, updated live
   // ---------------------------------------------------------------------------
-  let highlightMode = 'companies'; // 'companies' | 'all' | 'none'
+  let highlightMode              = 'companies'; // 'companies' | 'all' | 'none'
+  let openInternetHighlightEnabled = true;
 
-  chrome.storage.sync.get(['highlightMode'], result => {
+  chrome.storage.sync.get(['highlightMode', 'openInternetHighlightEnabled'], result => {
     if (result.highlightMode) highlightMode = result.highlightMode;
+    if (result.openInternetHighlightEnabled === false) openInternetHighlightEnabled = false;
   });
   chrome.storage.onChanged.addListener((changes, area) => {
-    if (area === 'sync' && changes.highlightMode) {
-      highlightMode = changes.highlightMode.newValue;
-    }
+    if (area !== 'sync') return;
+    if (changes.highlightMode) highlightMode = changes.highlightMode.newValue;
+    if (changes.openInternetHighlightEnabled) openInternetHighlightEnabled = changes.openInternetHighlightEnabled.newValue;
   });
 
   // ---------------------------------------------------------------------------
@@ -211,7 +213,7 @@
   }
 
   function processTextNode(textNode) {
-    if (highlightMode === 'none') return;
+    if (highlightMode === 'none' || !openInternetHighlightEnabled) return;
 
     const text = textNode.nodeValue;
     if (!text || text.trim().length < 15) return;
