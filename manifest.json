@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "CorpCipher - Decode the Corporate World",
+  "name": "Corporate Cipher - Decode the Corporate World",
   "version": "2.0",
   "description": "Info about financial contributions of companies and more, backed with public data.",
   
@@ -39,7 +39,7 @@
         "*://*.amazon.ca/*/dp/*",
         "*://*.amazon.ca/gp/product/*"
       ],
-      "js": ["React/react.js", "React/react-dom.js", "Util/ChromeGlobalVariablesAndMethods.js", "Util/ChromeRuntimeMessageListeners.js", "Util/OverlayPopupManager.js",  "Components/TiltAIHeader.js", "Components/CipherAIComponent.js", "Components/CipherAIWithPaygateComponent.js", "PageParsers/typicalProductPageParser.js", "PageParsers/bookPageParser.js", "ComponentInsertionManager.js", "NetworkManager.js", "DisplayElementManager.js", "PayGate/RateLimitManager.js", "content.js"],
+      "js": ["lib/AppConfig.js", "React/react.js", "React/react-dom.js", "Util/ChromeGlobalVariablesAndMethods.js", "Util/ChromeRuntimeMessageListeners.js", "Util/OverlayPopupManager.js",  "Components/TiltAIHeader.js", "Components/CipherAIComponent.js", "Components/CipherAIWithPaygateComponent.js", "PageParsers/typicalProductPageParser.js", "PageParsers/bookPageParser.js", "ComponentInsertionManager.js", "NetworkManager.js", "DisplayElementManager.js", "PayGate/RateLimitManager.js", "content.js"],
       "css": ["styles.css"],
       "run_at": "document_idle"
     },
@@ -56,7 +56,7 @@
         "*://cipher-ai.io/*",
         "*://*.cipher-ai.io/*"
       ],
-      "js": ["lib/CompanyList.js", "lib/compromise.min.js", "SubjectHighlighter.js", "HoverPopup.js"],
+      "js": ["lib/AppConfig.js", "lib/CompanyList.js", "lib/compromise.min.js", "SubjectHighlighter.js", "HoverPopup.js"],
       "css": ["subject-highlight.css"],
       "run_at": "document_idle"
     }

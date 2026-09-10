@@ -536,8 +536,8 @@
 
     popup.innerHTML = `
       <div class="chp-header">
-        <img class="chp-icon" src="${ICON_URL}" alt="Cipher AI">
-        <span class="chp-brand">Cipher AI</span>
+        <img class="chp-icon" src="${ICON_URL}" alt="${APP_NAME}">
+        <span class="chp-brand">${APP_NAME}</span>
         <button class="chp-cat-btn" title="Change analysis category">&#9660;</button>
         <button class="chp-close" title="Close">✕</button>
       </div>
@@ -655,8 +655,8 @@
     sidebar.innerHTML = `
       <div class="chp-header">
         <button class="chs-collapse-btn" title="Collapse / expand panel">&#10094;</button>
-        <img class="chp-icon" src="${ICON_URL}" alt="Cipher AI">
-        <span class="chp-brand">Cipher AI</span>
+        <img class="chp-icon" src="${ICON_URL}" alt="${APP_NAME}">
+        <span class="chp-brand">${APP_NAME}</span>
         <button class="chp-cat-btn" title="Change analysis category">&#9660;</button>
       </div>
       <div class="chp-cat-menu" style="display:none">${optionsHtml}</div>
@@ -1014,7 +1014,7 @@
       <div class="chp-contrib-note">This financial information is based on Federal Election Commission filings from the 2024 election cycle.</div>
       <div class="chp-contrib-note">Full financial contributions analysis available on <a href="#" class="chp-citation-link chp-contrib-site-link">cipher-ai.io ↗</a></div>
       <div class="chp-footer">
-        <button class="chp-open-btn" title="Open on Cipher AI">${openBtnSvg}</button>
+        <button class="chp-open-btn" title="Open on ${APP_NAME}">${openBtnSvg}</button>
       </div>
     `;
 
@@ -1062,7 +1062,7 @@
           <a href="#" class="chp-citation-link chp-demo-src-link">Company Leadership Page ↗</a>
         </div>` : ''}
       <div class="chp-footer">
-        <button class="chp-open-btn" title="Open on Cipher AI">
+        <button class="chp-open-btn" title="Open on ${APP_NAME}">
           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
@@ -1115,7 +1115,7 @@
           <a href="#" class="chp-citation-link">Financial Contributions Data for ${escHtml(term)}</a>
         </div>` : ''}
       <div class="chp-footer">
-        <button class="chp-open-btn" title="Open on Cipher AI">
+        <button class="chp-open-btn" title="Open on ${APP_NAME}">
           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>

@@ -30,7 +30,7 @@ const CipherAIWithPaygateComponent = ({
         return React.createElement('div', { className: 'paygate-content' },
             React.createElement('h2', { className: 'paygate-title' }, 'Welcome Back'),
             React.createElement('p', { className: 'paygate-subtitle' }, 
-                'Please log in to continue using Cipher AI Pro'
+                `Please log in to continue using ${APP_NAME} Pro`
             ),
             React.createElement('button', { 
                 className: 'paygate-btn paygate-btn-primary',
@@ -45,7 +45,7 @@ const CipherAIWithPaygateComponent = ({
     // Paygate content for free users (upgrade prompt)
     const renderFreeUserPaygate = () => {
         return React.createElement('div', { className: 'paygate-content' },
-            React.createElement('h2', { className: 'paygate-title' }, 'Upgrade to Cipher AI Pro'),
+            React.createElement('h2', { className: 'paygate-title' }, `Upgrade to ${APP_NAME} Pro`),
             React.createElement('p', { className: 'paygate-subtitle' }, 
                 'You\'ve reached your daily limit of ',
                 React.createElement('strong', null, '10 free'),
@@ -436,7 +436,7 @@ window.CipherAIWithPaygateComponent = CipherAIWithPaygateComponent;
 //         return React.createElement('div', { className: 'paygate-content' },
 //             React.createElement('div', { className: 'paygate-icon' }, '🔐'),
 //             React.createElement('h3', null, 'Welcome Back!'),
-//             React.createElement('p', null, 'Please log in to continue using Cipher AI Pro'),
+//             React.createElement('p', null, 'Please log in to continue using ${APP_NAME} Pro'),
 //             React.createElement('button', { 
 //                 className: 'tilt-ai-login-btn',
 //                 onClick: onLogin
@@ -450,7 +450,7 @@ window.CipherAIWithPaygateComponent = CipherAIWithPaygateComponent;
 //     // Paygate content for free users (upgrade prompt)
 //     const renderFreeUserPaygate = () => {
 //         return React.createElement('div', { className: 'paygate-content' },
-//             React.createElement('h3', null, 'Upgrade to Cipher AI Pro'),
+//             React.createElement('h3', null, 'Upgrade to ${APP_NAME} Pro'),
 //             React.createElement('p', null, 
 //                 'You\'ve reached your daily limit of ',
 //                 React.createElement('strong', null, '10 free'),

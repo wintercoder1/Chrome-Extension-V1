@@ -12,10 +12,10 @@ const TiltAIHeader = () => {
     return React.createElement('div', { className: 'tilt-ai-header' },
         React.createElement('img', {
             src: chrome.runtime.getURL('icons/cipher_logo@128.png'),
-            alt: 'Cipher AI Icon',
+            alt: `${APP_NAME} Icon`,
             className: 'tilt-ai-icon'
         }),
-        React.createElement('div', { className: 'tilt-ai-brand' }, 'Cipher AI')
+        React.createElement('div', { className: 'tilt-ai-brand' }, APP_NAME)
     );
 };
 

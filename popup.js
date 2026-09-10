@@ -1,5 +1,6 @@
 // popup.js
 document.addEventListener('DOMContentLoaded', async () => {
+  document.getElementById('appTitle').textContent = `🔍 ${APP_NAME} Brand Decoder`;
   const status              = document.getElementById('status');
   const categorySelect      = document.getElementById('categorySelect');
   const overlayDropdownToggle = document.getElementById('overlayDropdownToggle');

@@ -139,7 +139,7 @@ const CipherAIComponent = ({ companyName, brandName = null, politicalData = null
                 React.createElement('button', {
                     className: 'open-link-btn',
                     onClick: handleOpenLink,
-                    title: `Open ${companyName} on Cipher AI`
+                    title: `Open ${companyName} on ${APP_NAME}`
                 },
                     React.createElement('svg', {
                         xmlns: 'http://www.w3.org/2000/svg',

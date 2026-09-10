@@ -1,7 +1,9 @@
+importScripts('lib/AppConfig.js');
+
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: 'analyze-cipher-ai',
-    title: 'Analyze with Cipher AI',
+    title: `Analyze with ${APP_NAME}`,
     contexts: ['selection'],
   });
 });
