@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Open internet highlight toggle (default: on)
   const openInternetHighlightToggle = document.getElementById('openInternetHighlightToggle');
-  openInternetHighlightToggle.checked = result.openInternetHighlightEnabled !== false;
+  openInternetHighlightToggle.checked = result.openInternetHighlightEnabled === true;
   openInternetHighlightToggle.addEventListener('change', () => {
     chrome.storage.sync.set({ openInternetHighlightEnabled: openInternetHighlightToggle.checked });
   });

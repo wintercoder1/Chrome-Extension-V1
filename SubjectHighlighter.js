@@ -100,11 +100,11 @@
   // Highlight mode — read from extension settings, updated live
   // ---------------------------------------------------------------------------
   let highlightMode              = 'companies'; // 'companies' | 'all' | 'none'
-  let openInternetHighlightEnabled = true;
+  let openInternetHighlightEnabled = false;
 
   chrome.storage.sync.get(['highlightMode', 'openInternetHighlightEnabled'], result => {
     if (result.highlightMode) highlightMode = result.highlightMode;
-    if (result.openInternetHighlightEnabled === false) openInternetHighlightEnabled = false;
+    openInternetHighlightEnabled = result.openInternetHighlightEnabled === true;
   });
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area !== 'sync') return;
