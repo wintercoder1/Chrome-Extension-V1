@@ -64,7 +64,7 @@
   
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Cipher AI Settings"
+    "default_title": "CorpCipher Settings"
   },
   "web_accessible_resources": [
     {
