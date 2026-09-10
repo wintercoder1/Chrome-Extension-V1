@@ -898,7 +898,6 @@
           };
         } else {
           const id = raw.id ?? raw.response?.id ?? null;
-          console.log('[CipherAI] raw response keys:', Object.keys(raw), '| id:', id, '| raw.id:', raw.id, '| raw.response?.id:', raw.response?.id);
           data = {
             lean:         String(raw.lean    ?? raw.response?.lean    ?? 'Unknown'),
             score:        String(raw.rating  ?? raw.response?.rating  ?? 'N/A'),
