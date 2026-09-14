@@ -50,12 +50,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
-  // Open internet highlight toggle (default: on)
-  const openInternetHighlightToggle = document.getElementById('openInternetHighlightToggle');
-  openInternetHighlightToggle.checked = result.openInternetHighlightEnabled === true;
-  openInternetHighlightToggle.addEventListener('change', () => {
-    chrome.storage.sync.set({ openInternetHighlightEnabled: openInternetHighlightToggle.checked });
-  });
+  // TODO: re-enable alongside the Display-tab toggle once NLP detection is tuned.
+  // const openInternetHighlightToggle = document.getElementById('openInternetHighlightToggle');
+  // openInternetHighlightToggle.checked = result.openInternetHighlightEnabled === true;
+  // openInternetHighlightToggle.addEventListener('change', () => {
+  //   chrome.storage.sync.set({ openInternetHighlightEnabled: openInternetHighlightToggle.checked });
+  // });
 
   // Amazon enabled toggle (default: on)
   const amazonEnabledToggle = document.getElementById('amazonEnabledToggle');

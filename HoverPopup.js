@@ -190,6 +190,7 @@
     /* ── Font size modifiers (applied to the panel container) ─── */
     .chp-size-sm .chp-overview-title { font-size: 13px; }
     .chp-size-sm .chp-description,
+    .chp-size-sm .chp-contrib-preview,
     .chp-size-sm .chp-loading { font-size: 11px; }
     .chp-size-sm .chp-rating-value { font-size: 26px; }
     .chp-size-sm .chp-lean-value  { font-size: 18px; }
@@ -198,6 +199,7 @@
 
     .chp-size-lg .chp-overview-title { font-size: 17px; }
     .chp-size-lg .chp-description,
+    .chp-size-lg .chp-contrib-preview,
     .chp-size-lg .chp-loading { font-size: 15px; }
     .chp-size-lg .chp-rating-value { font-size: 38px; }
     .chp-size-lg .chp-lean-value  { font-size: 26px; }
@@ -206,6 +208,7 @@
 
     .chp-size-xl .chp-overview-title { font-size: 19px; }
     .chp-size-xl .chp-description,
+    .chp-size-xl .chp-contrib-preview,
     .chp-size-xl .chp-loading { font-size: 17px; }
     .chp-size-xl .chp-rating-value { font-size: 44px; }
     .chp-size-xl .chp-lean-value  { font-size: 30px; }
@@ -398,6 +401,9 @@
   // Toggle for local development vs production
   // const BASE_API = 'http://localhost:8000';
   const BASE_API   = 'https://compass-ai-internal-api.com';
+  // Canonical site host — hitting www directly avoids a redirect hop that can
+  // strip the ?id= query string before the page reads it.
+  const SITE_BASE  = 'https://www.cipher-ai.io';
 
   // Guard against "Extension context invalidated" after an extension reload
   function isContextValid() {
@@ -427,6 +433,28 @@
     if (CACHE.has(key)) CACHE.delete(key);
     else if (CACHE.size >= MAX_CACHE) CACHE.delete(CACHE.keys().next().value); // evict oldest
     CACHE.set(key, val);
+  }
+
+  // Terms we've already kicked off a full-answer generation for this session,
+  // so browsing back and forth can't fire the same expensive LLM call twice.
+  const PREWARMED = new Set();
+
+  // The quick endpoints only READ an existing full answer; when none exists they
+  // return no id and the site link can't deep-link. Generating one takes ~3s, so
+  // it runs in the background while the user reads the card and fills in data.id
+  // (the same object held in the LRU cache) if they click through later.
+  function prewarmFullAnswer(term, data) {
+    if (PREWARMED.has(term)) return;
+    PREWARMED.add(term);
+    // Deliberately unaborted — switching terms shouldn't discard work already
+    // paid for, and the result still benefits the cache entry.
+    fetch(`${BASE_API}/getFinancialContributionsOverview/${encodeURIComponent(term)}`)
+      .then(r => (r.ok ? r.json() : null))
+      .then(json => {
+        const id = json?.id ?? json?.response?.id ?? null;
+        if (id != null) data.id = String(id);
+      })
+      .catch(() => {});
   }
 
   const ENDPOINT_MAP = {
@@ -465,7 +493,8 @@
   let isDragging        = false;
   let didJustDrag       = false;
   let currentController = null; // AbortController for the in-flight fetch
-  let lastTarget        = null; // the span that last triggered the popup
+  let lastTarget        = null; // anchor for positioning — Element OR DOMRect
+  let lastTerm          = null; // resolved term, so re-fetch works for either anchor type
 
   const FONT_SIZE_CLASSES = ['chp-size-sm', 'chp-size-lg', 'chp-size-xl'];
 
@@ -499,12 +528,7 @@
         sidebar.style.display = '';
         expandSidebar(sidebar);
         // Re-show the last analysed term in the sidebar if there is one
-        if (lastTarget) {
-          const term = normalizeTerm(
-            lastTarget instanceof Element ? lastTarget.textContent : ''
-          );
-          if (term) loadIntoPanel(term, sidebar);
-        }
+        if (lastTerm) loadIntoPanel(lastTerm, sidebar);
       } else {
         // Back to overlay — fully hide the sidebar
         const sidebar = document.getElementById('cipher-sidebar');
@@ -576,7 +600,7 @@
         currentCategory = opt.dataset.cat;
         safeSet({ analysisCategory: currentCategory });
         closeCatMenu();
-        if (lastTarget) showPopup(lastTarget); // re-fetch for the same term
+        if (lastTerm) showPopup(lastTarget, lastTerm); // re-fetch for the same term
       });
     });
 
@@ -638,7 +662,7 @@
         currentCategory = opt.dataset.cat;
         safeSet({ analysisCategory: currentCategory });
         closeCatMenu();
-        if (lastTarget) showPopup(lastTarget);
+        if (lastTerm) showPopup(lastTarget, lastTerm);
       });
     });
     container.querySelector('.chp-body').addEventListener('click', () => closeCatMenu());
@@ -744,11 +768,14 @@
     if (!isContextValid()) return;
     if (currentController) { currentController.abort(); currentController = null; }
 
-    lastTarget = (targetEl instanceof Element) ? targetEl : null;
+    // Keep DOMRect anchors too — positionNear handles both, and dropping them
+    // left cross-element selections unable to re-fetch on a category change.
+    lastTarget = targetEl || null;
     const term = normalizeTerm(
       termOverride || (targetEl instanceof Element ? targetEl.textContent : '')
     );
     if (!term) return;
+    lastTerm = term;
 
     if (displayMode === 'sidebar') {
       const sidebar = getSidebar();
@@ -861,8 +888,7 @@
         const pc = pcJson?.percent_contributions || pcJson?.response?.percent_contributions || {};
         const pcId = pcJson?.id != null ? String(pcJson.id) : null;
         const qtId = qtJson?.id != null ? String(qtJson.id) : null;
-        const quickText = qtJson?.text || qtJson?.quick_text || qtJson?.summary
-                       || qtJson?.fec_financial_contributions_quick_text || null;
+        const quickText = qtJson?.text_available === false ? null : (qtJson?.summary || null);
 
         data = {
           type:            'financial_contributions',
@@ -873,8 +899,20 @@
           pct_republicans: pc.percent_to_republicans || 0,
           quickText:       quickText,
           id:              pcId ?? qtId,  // percent-contributions id wins; falls back to quick-text id
-          error:           false,
+          // Absence is an answer, not an error — see committee_status in the API docs
+          committeeStatus:   pcJson?.committee_status || null,
+          committeeName:     pcJson?.committee_name || null,
+          message:           pcJson?.message || null,
+          scopeNote:         pcJson?.scope_note || null,
+          sourceUrl:         pcJson?.source_url || null,
+          searchedAs:        Array.isArray(pcJson?.searched_as) ? pcJson.searched_as : null,
+          resolvedViaParent: pcJson?.resolved_via_parent || null,
+          error:             pcJson === null,  // only a genuine fetch failure
         };
+
+        // Only worth generating when percentages actually came back — no
+        // committee means there is no full answer to create in the first place.
+        if (!data.id && data.total > 0) prewarmFullAnswer(term, data);
       } else {
         const endpoint = ENDPOINT_MAP[currentCategory] || 'getPoliticalLeaning';
         const res = await fetch(
@@ -908,7 +946,10 @@
           };
         }
       }
-      cacheSet(cacheKey, data);
+      // Absence answers (no_pac_on_record / no_committee_found) are cacheable —
+      // they won't change. Transient failures (503, network) must not be, or a
+      // brief outage sticks to the term for the rest of the page session.
+      if (!data.error) cacheSet(cacheKey, data);
       return data;
     } catch (err) {
       if (err.name === 'AbortError') throw err; // let showPopup's .catch handle it; don't cache
@@ -916,12 +957,11 @@
       if (currentCategory === 'Leadership Demographics') {
         fallback = { type: 'leadership_demographics', groups: [], basis: '', is_estimate: true, company_page_url: null, id: null };
       } else if (currentCategory === 'Financial Contributions') {
-        fallback = { type: 'financial_contributions', total: 0, to_democrats: 0, to_republicans: 0, pct_democrats: 0, pct_republicans: 0, id: null, error: true };
+        fallback = { type: 'financial_contributions', total: 0, to_democrats: 0, to_republicans: 0, pct_democrats: 0, pct_republicans: 0, id: null, committeeStatus: null, error: true };
       } else {
         fallback = { lean: 'Unknown', score: 'N/A', description: 'Analysis unavailable for this term.', withFinancial: false, id: null };
       }
-      cacheSet(cacheKey, fallback);
-      return fallback;
+      return fallback; // transient failure — not cached, so a retry can succeed
     }
   }
 
@@ -967,21 +1007,16 @@
 
   function renderFinancialContributions(popup, term, data) {
     const content = popup.querySelector('.chp-content');
-    const idSuffix = data.id ? `?id=${encodeURIComponent(data.id)}` : '';
-    const siteUrl = `https://cipher-ai.io/organization/financial_contributions/${encodeURIComponent(term)}${idSuffix}`;
 
-    if (data.error || !data.total) {
-      content.innerHTML = `
-        <div class="chp-overview-title">Financial Contributions for <strong>${escHtml(term)}</strong></div>
-        <div class="chp-description">No financial contribution data available for this term.</div>
-      `;
-      popup.querySelector('.chp-loading').style.display = 'none';
-      return;
-    }
+    // Built at click time, not render time: a background generation may fill in
+    // data.id after this card is already on screen, and reading it lazily means
+    // the link picks that up with no DOM patching.
+    const openSite = () => {
+      const suffix = data.id ? `?id=${encodeURIComponent(data.id)}` : '';
+      window.open(`${SITE_BASE}/organization/financial_contributions/${encodeURIComponent(term)}${suffix}`, '_blank');
+    };
 
-    // Normalize Democrat/Republican percentages to fill 100% of bar
-    const sum = (data.pct_democrats || 0) + (data.pct_republicans || 0);
-    const demWidth = sum > 0 ? ((data.pct_democrats / sum) * 100).toFixed(2) : 50;
+    const title = `<div class="chp-overview-title">Financial Contributions for <strong>${escHtml(term)}</strong></div>`;
 
     const openBtnSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -989,9 +1024,74 @@
       <polyline points="15 3 21 3 21 9"/>
       <line x1="10" y1="14" x2="21" y2="3"/>
     </svg>`;
+    const footer = `
+      <div class="chp-footer">
+        <button class="chp-open-btn" title="Open on ${APP_NAME}">${openBtnSvg}</button>
+      </div>`;
+
+    // In the absence cases, only offer the deep link when an answer actually
+    // exists to open. A topic can have cached text but no resolved committee
+    // (Adobe), and that link is worth keeping; a bare one leads nowhere.
+    const linkFooter = data.id ? footer : '';
+
+    const finish = () => {
+      const openBtn = content.querySelector('.chp-open-btn');
+      if (openBtn) openBtn.addEventListener('click', e => { e.preventDefault(); openSite(); });
+      const siteLink = content.querySelector('.chp-contrib-site-link');
+      if (siteLink) siteLink.addEventListener('click', e => { e.preventDefault(); openSite(); });
+      const srcLink = content.querySelector('.chp-contrib-source-link');
+      if (srcLink) srcLink.addEventListener('click', e => { e.preventDefault(); window.open(data.sourceUrl, '_blank'); });
+      popup.querySelector('.chp-loading').style.display = 'none';
+    };
+
+    // Genuine fetch failure
+    if (data.error) {
+      content.innerHTML = title + `<div class="chp-description">Contribution data is unavailable right now.</div>`;
+      finish();
+      return;
+    }
+
+    // Confirmed from a cited source: this company runs no corporate PAC.
+    // The scope note is required — a corporate PAC is narrow, and omitting it
+    // would imply the company spends nothing politically at all.
+    if (data.committeeStatus === 'no_pac_on_record') {
+      content.innerHTML = title
+        + `<div class="chp-description">${escHtml(data.message || `${term} does not operate a corporate political action committee.`)}</div>`
+        + (data.scopeNote ? `<div class="chp-contrib-note">${escHtml(data.scopeNote)}</div>` : '')
+        + (data.sourceUrl ? `<div class="chp-citations"><span class="chp-citations-label">Source:</span><a href="#" class="chp-citation-link chp-contrib-source-link">Company policy statement ↗</a></div>` : '')
+        + linkFooter;
+      finish();
+      return;
+    }
+
+    // Nothing matched — we found nothing and claim nothing.
+    if (data.committeeStatus === 'no_committee_found') {
+      content.innerHTML = title
+        + `<div class="chp-description">${escHtml(data.message || 'No political committee matching this company was found in the FEC data.')}</div>`
+        + (data.searchedAs && data.searchedAs.length
+            ? `<div class="chp-contrib-note">Searched as: ${escHtml(data.searchedAs.join(', '))}</div>` : '')
+        + linkFooter;
+      finish();
+      return;
+    }
+
+    if (!data.total) {
+      content.innerHTML = title
+        + `<div class="chp-description">No contribution totals are available for this term.</div>`
+        + linkFooter;
+      finish();
+      return;
+    }
+
+    // Normalize Democrat/Republican percentages to fill 100% of bar
+    const sum = (data.pct_democrats || 0) + (data.pct_republicans || 0);
+    const demWidth = sum > 0 ? ((data.pct_democrats / sum) * 100).toFixed(2) : 50;
 
     content.innerHTML = `
-      <div class="chp-overview-title">Political Contributions for <strong>${escHtml(term)}</strong></div>
+      ${title}
+      ${data.resolvedViaParent
+        ? `<div class="chp-contrib-note">Reported from parent company <strong>${escHtml(data.resolvedViaParent)}</strong>.</div>`
+        : ''}
       <div class="chp-contrib-stats">
         <div class="chp-contrib-stat-line">Total Contributions: ${escHtml(formatDollars(data.total))}</div>
         <div class="chp-contrib-stat-line">To Republicans: ${escHtml(formatDollars(data.to_republicans))} (${data.pct_republicans.toFixed(2)}%)</div>
@@ -1011,23 +1111,13 @@
           <span>Republicans</span>
         </div>
       </div>
+      ${data.quickText ? `<div class="chp-contrib-preview">${escHtml(data.quickText)}</div>` : ''}
       <div class="chp-contrib-note">This financial information is based on Federal Election Commission filings from the 2024 election cycle.</div>
-      <div class="chp-contrib-note">Full financial contributions analysis available on <a href="#" class="chp-citation-link chp-contrib-site-link">cipher-ai.io ↗</a></div>
-      <div class="chp-footer">
-        <button class="chp-open-btn" title="Open on ${APP_NAME}">${openBtnSvg}</button>
-      </div>
+      <div class="chp-contrib-note">Full financial contributions analysis available on the <a href="#" class="chp-citation-link chp-contrib-site-link">${APP_NAME} website ↗</a></div>
+      ${footer}
     `;
 
-    content.querySelector('.chp-open-btn').addEventListener('click', e => {
-      e.preventDefault();
-      window.open(siteUrl, '_blank');
-    });
-    content.querySelector('.chp-contrib-site-link').addEventListener('click', e => {
-      e.preventDefault();
-      window.open(siteUrl, '_blank');
-    });
-
-    popup.querySelector('.chp-loading').style.display = 'none';
+    finish();
   }
 
   function renderLeadershipDemographics(popup, term, data) {
@@ -1074,7 +1164,7 @@
     `;
     content.querySelector('.chp-open-btn').addEventListener('click', e => {
       e.preventDefault();
-      window.open(`https://cipher-ai.io/organization/leadership_demographics/${encodeURIComponent(term)}${idSuffix}`, '_blank');
+      window.open(`${SITE_BASE}/organization/leadership_demographics/${encodeURIComponent(term)}${idSuffix}`, '_blank');
     });
     const srcLink = content.querySelector('.chp-demo-src-link');
     if (srcLink) {
@@ -1130,14 +1220,14 @@
 
     content.querySelector('.chp-open-btn').addEventListener('click', e => {
       e.preventDefault();
-      window.open(`https://cipher-ai.io/organization/${slug}/${encodeURIComponent(term)}${idSuffix}`, '_blank');
+      window.open(`${SITE_BASE}/organization/${slug}/${encodeURIComponent(term)}${idSuffix}`, '_blank');
     });
 
     const citLink = content.querySelector('.chp-citation-link');
     if (citLink) {
       citLink.addEventListener('click', e => {
         e.preventDefault();
-        window.open(`https://cipher-ai.io/organization/financial_contributions/${encodeURIComponent(term)}${idSuffix}`, '_blank');
+        window.open(`${SITE_BASE}/organization/financial_contributions/${encodeURIComponent(term)}${idSuffix}`, '_blank');
       });
     }
 

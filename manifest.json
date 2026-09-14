@@ -25,9 +25,7 @@
     "*://*.amazon.es/*",
     "https://cipher-ai.io/*",
     "https://wintercoder1.github.io/*",
-    "https://compass-ai-internal-api.com/*",
-    "https://compass-ai-internal-api.com/addComment/*",
-    "http://localhost:8000/getPoliticalLeaning"
+    "https://compass-ai-internal-api.com/*"
   ],
   "content_scripts": [
     {
@@ -39,7 +37,7 @@
         "*://*.amazon.ca/*/dp/*",
         "*://*.amazon.ca/gp/product/*"
       ],
-      "js": ["lib/AppConfig.js", "React/react.js", "React/react-dom.js", "Util/ChromeGlobalVariablesAndMethods.js", "Util/ChromeRuntimeMessageListeners.js", "Util/OverlayPopupManager.js",  "Components/TiltAIHeader.js", "Components/CipherAIComponent.js", "Components/CipherAIWithPaygateComponent.js", "PageParsers/typicalProductPageParser.js", "PageParsers/bookPageParser.js", "ComponentInsertionManager.js", "NetworkManager.js", "DisplayElementManager.js", "PayGate/RateLimitManager.js", "content.js"],
+      "js": ["lib/AppConfig.js", "React/react.js", "React/react-dom.js", "Util/ChromeGlobalVariablesAndMethods.js", "Util/ChromeRuntimeMessageListeners.js", "Util/OverlayPopupManager.js",  "Components/TiltAIHeader.js", "Components/CipherAIComponent.js", "Components/CipherAIWithPayGateComponent.js", "PageParsers/typicalProductPageParser.js", "PageParsers/bookPageParser.js", "ComponentInsertionManager.js", "NetworkManager.js", "DisplayElementManager.js", "PayGate/RateLimitManager.js", "content.js"],
       "css": ["styles.css"],
       "run_at": "document_idle"
     },
