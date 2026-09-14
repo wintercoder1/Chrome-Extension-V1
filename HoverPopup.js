@@ -487,7 +487,7 @@
     ).join('');
   }
 
-  let currentCategory   = 'Political Leaning';
+  let currentCategory   = 'Financial Contributions';
   let displayMode       = 'overlay'; // 'overlay' | 'sidebar'
   let contentFontSize   = 'md';      // 'sm' | 'md' | 'lg' | 'xl'
   let isDragging        = false;

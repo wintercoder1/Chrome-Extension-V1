@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   ]);
 
   // Category dropdown
-  categorySelect.value = result.analysisCategory || 'Political Leaning';
+  categorySelect.value = result.analysisCategory || 'Financial Contributions';
   categorySelect.addEventListener('change', async () => {
     const newCategory = categorySelect.value;
     await chrome.storage.sync.set({ analysisCategory: newCategory });

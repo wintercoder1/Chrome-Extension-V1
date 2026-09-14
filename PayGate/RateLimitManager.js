@@ -1,7 +1,10 @@
 // Rate Limiting Manager for Chrome Extension
 class RateLimitManager {
   constructor() {
-    this.DAILY_LIMIT = 2;// 10; //20; //10; //8; //2; // 8; //10;
+    // Paygate is off for now. Infinity works *through* the existing checks
+    // rather than around them, so every current and future comparison against
+    // DAILY_LIMIT passes. Set a real number to re-enable (was 2).
+    this.DAILY_LIMIT = Infinity; // 2; // 10; //20; //10; //8; // 8; //10;
     this.STORAGE_KEY = 'tilt_ai_usage_data';
   }
 
