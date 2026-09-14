@@ -928,14 +928,14 @@ class  DisplayElementManager {
     // Handle upgrade button click
     handleUpgrade() {
         console.log('🛒 PAYGATE: Upgrade button clicked');
-        window.open('https://cipher-ai.io/payment/signup', '_blank');
+        window.open('https://corporatecipher.io/payment/signup', '_blank');
         this.trackConversionAttempt('upgrade_clicked');
     }
 
     // Handle login button click
     handleLogin() {
         console.log('🔐 PAYGATE: Login button clicked');
-        window.open('https://cipher-ai.io/payment/login', '_blank');
+        window.open('https://corporatecipher.io/payment/login', '_blank');
         this.trackConversionAttempt('login_clicked');
     }
 

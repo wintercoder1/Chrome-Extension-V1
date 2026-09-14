@@ -1,6 +1,6 @@
 // TODO: Make this work the more traditonal React way with hooks.
 
-const CIPHER_SITE_BASE = 'https://www.cipher-ai.io';
+const CIPHER_SITE_BASE = 'https://corporatecipher.io';
 const CIPHER_DEMO_COLORS = [
   '#4e79a7', '#f28e2b', '#e15759', '#76b7b2',
   '#59a14f', '#edc948', '#b07aa1', '#9c755f',
@@ -252,7 +252,7 @@ const CipherAIComponent = ({ companyName, brandName = null, politicalData = null
                     { data: politicalData, topic: title_overview_name })));
     }
 
-    const BASE_URL = 'https://cipher-ai.io';
+    const BASE_URL = 'https://corporatecipher.io';
 
     const handleCitationClickFinancialContributionsOverview = (e) => {
         e.preventDefault();

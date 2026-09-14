@@ -403,7 +403,7 @@
   const BASE_API   = 'https://compass-ai-internal-api.com';
   // Canonical site host — hitting www directly avoids a redirect hop that can
   // strip the ?id= query string before the page reads it.
-  const SITE_BASE  = 'https://www.cipher-ai.io';
+  const SITE_BASE  = 'https://corporatecipher.io';
 
   // Guard against "Extension context invalidated" after an extension reload
   function isContextValid() {

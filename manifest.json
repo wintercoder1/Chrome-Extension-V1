@@ -24,7 +24,6 @@
     "*://*.amazon.it/*",
     "*://*.amazon.es/*",
     "https://cipher-ai.io/*",
-    "https://wintercoder1.github.io/*",
     "https://compass-ai-internal-api.com/*"
   ],
   "content_scripts": [
@@ -52,7 +51,9 @@
         "*://*.amazon.it/*",
         "*://*.amazon.es/*",
         "*://cipher-ai.io/*",
-        "*://*.cipher-ai.io/*"
+        "*://*.cipher-ai.io/*",
+        "*://corporatecipher.io/*",
+        "*://*.corporatecipher.io/*"
       ],
       "js": ["lib/AppConfig.js", "lib/CompanyList.js", "lib/compromise.min.js", "SubjectHighlighter.js", "HoverPopup.js"],
       "css": ["subject-highlight.css"],
