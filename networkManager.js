@@ -88,7 +88,73 @@ class NetworkManager {
     );
   }
 
-  async fetchAnalysis(companyName, category = 'Political Leaning') {
+  // Financial Contributions splits across two cheap endpoints instead of the 3s
+  // overview call; id comes from whichever of them provides one.
+  async fetchFinancialContributions(topic) {
+    const safeJson = url =>
+      fetch(url, { headers: { 'Content-Type': 'application/json' } })
+        .then(r => (r.ok ? r.json() : null))
+        .catch(() => null);
+
+    const [pcJson, qtJson] = await Promise.all([
+      safeJson(`${this.baseUrl}/getFinancialContributionsPercentContributionsOnly/${encodeURIComponent(topic)}`),
+      safeJson(`${this.baseUrl}/getFinancialContributionsQuickTextOnly/${encodeURIComponent(topic)}`),
+    ]);
+
+    const pc   = pcJson?.percent_contributions || pcJson?.response?.percent_contributions || {};
+    const pcId = pcJson?.id != null ? String(pcJson.id) : null;
+    const qtId = qtJson?.id != null ? String(qtJson.id) : null;
+
+    return {
+      type:            'financial_contributions',
+      queryType:       'Financial Contributions',
+      companyName:     topic,
+      total:           pc.total_contributions   || 0,
+      to_democrats:    pc.total_to_democrats    || 0,
+      to_republicans:  pc.total_to_republicans  || 0,
+      pct_democrats:   pc.percent_to_democrats  || 0,
+      pct_republicans: pc.percent_to_republicans || 0,
+      quickText:       qtJson?.text_available === false ? null : (qtJson?.summary || null),
+      id:              pcId ?? qtId,
+      // Absence is an answer, not an error — see committee_status in the API docs
+      committeeStatus:   pcJson?.committee_status || null,
+      message:           pcJson?.message || null,
+      scopeNote:         pcJson?.scope_note || null,
+      sourceUrl:         pcJson?.source_url || null,
+      searchedAs:        Array.isArray(pcJson?.searched_as) ? pcJson.searched_as : null,
+      resolvedViaParent: pcJson?.resolved_via_parent || null,
+      error:             pcJson === null,
+    };
+  }
+
+  async fetchLeadershipDemographics(topic) {
+    try {
+      const res = await fetch(`${this.baseUrl}/getLeadershipDemographics/${encodeURIComponent(topic)}`,
+        { headers: { 'Content-Type': 'application/json' } });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const raw = await res.json();
+      const dem = raw.demographics || {};
+      const eth = dem.estimated_ethnicity || {};
+      return {
+        type:             'leadership_demographics',
+        queryType:        'Leadership Demographics',
+        companyName:      topic,
+        team_size:        dem.team_size || raw.officer_count || 0,
+        groups:           (eth.groups || []).filter(g => g.percent > 0),
+        basis:            eth.basis || '',
+        is_estimate:      eth.is_estimate !== false,
+        company_page_url: raw.company_page_url || dem.company_page_url || null,
+        id:               raw.id != null ? String(raw.id) : null,
+      };
+    } catch (error) {
+      console.error('Error fetching leadership demographics:', error);
+      return { type: 'leadership_demographics', queryType: 'Leadership Demographics',
+               companyName: topic, groups: [], basis: '', is_estimate: true,
+               company_page_url: null, id: null };
+    }
+  }
+
+  async fetchAnalysis(companyName, category = 'Financial Contributions') {
     const endpointMap = {
       'Political Leaning':     'getPoliticalLeaning',
       'DEI Friendliness':      'getDEIFriendlinessScore',
@@ -96,14 +162,17 @@ class NetworkManager {
       'Environmental Impact':  'getEnvironmentalImpactScore',
       'Immigration Support':   'getImmigrationSupportScore',
       'Technology Innovation': 'getTechnologyInnovationScore',
-      'Financial Contributions': 'getPoliticalLeaningWithCitation',
     };
 
-    const endpoint = endpointMap[category] || 'getPoliticalLeaning';
+    if (!companyName || companyName === 'no-info-found') return null;
+    // Named distinctly: the try block below declares its own `topic` for the
+    // topic the API echoes back, which is a different value.
+    const queryTopic = companyName.trim();
 
-    if (!companyName || companyName === 'no-info-found') {
-      return null;
-    }
+    if (category === 'Financial Contributions')  return this.fetchFinancialContributions(queryTopic);
+    if (category === 'Leadership Demographics')  return this.fetchLeadershipDemographics(queryTopic);
+
+    const endpoint = endpointMap[category] || 'getPoliticalLeaning';
 
     try {
       const url = `${this.baseUrl}/${endpoint}/${companyName.trim()}`;

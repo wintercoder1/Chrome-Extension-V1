@@ -73,7 +73,7 @@ class  DisplayElementManager {
         return element
     }
 
-    createDisplayElementWithComponentCipher(brandInfo, ownerInfo = null, isLoading = false, category = 'Political Leaning') {
+    createDisplayElementWithComponentCipher(brandInfo, ownerInfo = null, isLoading = false, category = 'Financial Contributions') {
         // Extract company name from the brandInfo object
         let companyName = 'Loading...';
         

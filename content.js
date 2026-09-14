@@ -381,7 +381,7 @@ class AmazonBrandTracker {
     
     // Read category before creating loading element so the label is correct
     const { analysisCategory: initialCategory } = await chrome.storage.sync.get(['analysisCategory']);
-    const loadingCategory = initialCategory || 'Political Leaning';
+    const loadingCategory = initialCategory || 'Financial Contributions';
 
     // First we create the component. It will initially be in its loading state.
     console.log('Now displaying extension component...');

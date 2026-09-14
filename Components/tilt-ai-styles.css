@@ -268,3 +268,91 @@
         color: #1565c0;
     }
 }
+
+/* ── Financial Contributions ──────────────────────────────── */
+.contrib-stats { margin-bottom: 2px; }
+.contrib-stat-line {
+  font-size: 13px;
+  color: #333;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+.contrib-bar {
+  height: 38px;
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  margin: 14px 0 10px;
+}
+.contrib-bar-dem { background: #6495ed; height: 100%; }
+.contrib-bar-rep { flex: 1; height: 100%; background: #e05c5c; }
+.contrib-legend {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #333;
+  margin-bottom: 12px;
+}
+.contrib-legend-item { display: flex; align-items: center; gap: 6px; }
+.contrib-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.contrib-note {
+  font-size: 12px;
+  color: #888;
+  font-style: italic;
+  line-height: 1.4;
+  margin: 0 0 10px;
+}
+.contrib-preview {
+  font-size: 12px;
+  color: #555;
+  line-height: 1.5;
+  margin: 0 0 12px;
+  padding-left: 10px;
+  border-left: 3px solid #e0e0e0;
+}
+
+/* ── Leadership Demographics ──────────────────────────────── */
+.demo-team-size {
+  font-size: 11px;
+  color: #888;
+  margin: 0 0 10px;
+}
+.demo-chart-area {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.demo-legend { flex: 1; min-width: 0; }
+.demo-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 5px;
+}
+.demo-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.demo-group-name {
+  flex: 1;
+  font-size: 12px;
+  color: #444;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.demo-pct {
+  font-size: 12px;
+  font-weight: 600;
+  color: #222;
+  flex-shrink: 0;
+}
