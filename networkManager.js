@@ -90,15 +90,16 @@ class NetworkManager {
 
   // Financial Contributions splits across two cheap endpoints instead of the 3s
   // overview call; id comes from whichever of them provides one.
-  async fetchFinancialContributions(topic) {
+  async fetchFinancialContributions(topic, cycle = DEFAULT_ELECTION_CYCLE) {
     const safeJson = url =>
       fetch(url, { headers: { 'Content-Type': 'application/json' } })
         .then(r => (r.ok ? r.json() : null))
         .catch(() => null);
 
+    // Both get the same cycle so the text and the percentages describe the same year
     const [pcJson, qtJson] = await Promise.all([
-      safeJson(`${this.baseUrl}/getFinancialContributionsPercentContributionsOnly/${encodeURIComponent(topic)}`),
-      safeJson(`${this.baseUrl}/getFinancialContributionsQuickTextOnly/${encodeURIComponent(topic)}`),
+      safeJson(`${this.baseUrl}/getFinancialContributionsPercentContributionsOnly/${encodeURIComponent(topic)}?cycleYear=${cycle}`),
+      safeJson(`${this.baseUrl}/getFinancialContributionsQuickTextOnly/${encodeURIComponent(topic)}?cycleYear=${cycle}`),
     ]);
 
     const pc   = pcJson?.percent_contributions || pcJson?.response?.percent_contributions || {};
@@ -115,6 +116,11 @@ class NetworkManager {
       pct_democrats:   pc.percent_to_democrats  || 0,
       pct_republicans: pc.percent_to_republicans || 0,
       quickText:       qtJson?.text_available === false ? null : (qtJson?.summary || null),
+      // Percentages can exist for a year with no write-up yet — a note, not an error
+      noWriteUp:       qtJson?.text_available === false,
+      // The cycle the API actually answered for. Not cycle_year: quick-text
+      // only sets that when text exists, and percentages never does.
+      cycle:           Number(pcJson?.cycle ?? qtJson?.cycle ?? cycle),
       id:              pcId ?? qtId,
       // Absence is an answer, not an error — see committee_status in the API docs
       committeeStatus:   pcJson?.committee_status || null,
@@ -154,7 +160,8 @@ class NetworkManager {
     }
   }
 
-  async fetchAnalysis(companyName, category = 'Financial Contributions') {
+  // cycle applies to Financial Contributions only
+  async fetchAnalysis(companyName, category = 'Financial Contributions', cycle = DEFAULT_ELECTION_CYCLE) {
     const endpointMap = {
       'Political Leaning':     'getPoliticalLeaning',
       'DEI Friendliness':      'getDEIFriendlinessScore',
@@ -169,7 +176,7 @@ class NetworkManager {
     // topic the API echoes back, which is a different value.
     const queryTopic = companyName.trim();
 
-    if (category === 'Financial Contributions')  return this.fetchFinancialContributions(queryTopic);
+    if (category === 'Financial Contributions')  return this.fetchFinancialContributions(queryTopic, cycle);
     if (category === 'Leadership Demographics')  return this.fetchLeadershipDemographics(queryTopic);
 
     const endpoint = endpointMap[category] || 'getPoliticalLeaning';

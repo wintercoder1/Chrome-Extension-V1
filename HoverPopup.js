@@ -389,6 +389,30 @@
       line-height: 1.4;
       margin-bottom: 10px;
     }
+    .chp-cycle-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 12px;
+    }
+    .chp-cycle-chip {
+      padding: 2px 10px;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      background: #fff;
+      font-size: 12px;
+      color: #555;
+      cursor: pointer;
+    }
+    .chp-cycle-chip:hover:not(.active) { background: #f5f5f5; }
+    .chp-cycle-chip.active {
+      background: #007185;
+      border-color: #007185;
+      color: #fff;
+      cursor: default;
+    }
   `;
 
   const styleEl = document.createElement('style');
@@ -410,10 +434,10 @@
     try { return !!chrome.runtime.id; } catch (e) { return false; }
   }
   function safeGet(keys, cb) {
-    try { safeGet(keys, cb); } catch (e) {}
+    try { chrome.storage.sync.get(keys, cb); } catch (e) {}
   }
   function safeSet(obj) {
-    try { safeSet(obj); } catch (e) {}
+    try { chrome.storage.sync.set(obj); } catch (e) {}
   }
 
   let ICON_URL = '';
@@ -435,20 +459,22 @@
     CACHE.set(key, val);
   }
 
-  // Terms we've already kicked off a full-answer generation for this session,
-  // so browsing back and forth can't fire the same expensive LLM call twice.
+  // Term + cycle pairs we've already kicked off a full-answer generation for this
+  // session, so browsing back and forth can't fire the same expensive LLM call twice.
+  // Each answer belongs to exactly one cycle, so 2024 still needs its own.
   const PREWARMED = new Set();
 
   // The quick endpoints only READ an existing full answer; when none exists they
   // return no id and the site link can't deep-link. Generating one takes ~3s, so
   // it runs in the background while the user reads the card and fills in data.id
   // (the same object held in the LRU cache) if they click through later.
-  function prewarmFullAnswer(term, data) {
-    if (PREWARMED.has(term)) return;
-    PREWARMED.add(term);
+  function prewarmFullAnswer(term, cycle, data) {
+    const key = term + '\x00' + cycle;
+    if (PREWARMED.has(key)) return;
+    PREWARMED.add(key);
     // Deliberately unaborted — switching terms shouldn't discard work already
     // paid for, and the result still benefits the cache entry.
-    fetch(`${BASE_API}/getFinancialContributionsOverview/${encodeURIComponent(term)}`)
+    fetch(`${BASE_API}/getFinancialContributionsOverview/${encodeURIComponent(term)}?cycleYear=${cycle}`)
       .then(r => (r.ok ? r.json() : null))
       .then(json => {
         const id = json?.id ?? json?.response?.id ?? null;
@@ -488,6 +514,7 @@
   }
 
   let currentCategory   = 'Financial Contributions';
+  let currentCycle      = DEFAULT_ELECTION_CYCLE; // Financial Contributions only
   let displayMode       = 'overlay'; // 'overlay' | 'sidebar'
   let contentFontSize   = 'md';      // 'sm' | 'md' | 'lg' | 'xl'
   let isDragging        = false;
@@ -509,8 +536,9 @@
   }
 
   // Load persisted settings and keep them in sync globally
-  safeGet(['analysisCategory', 'displayMode', 'contentFontSize'], result => {
+  safeGet(['analysisCategory', 'electionCycle', 'displayMode', 'contentFontSize'], result => {
     if (result.analysisCategory) currentCategory = result.analysisCategory;
+    currentCycle = resolveElectionCycle(result.electionCycle);
     if (result.displayMode)      displayMode     = result.displayMode;
     if (result.contentFontSize)  { contentFontSize = result.contentFontSize; applyFontSize(); }
   });
@@ -518,6 +546,9 @@
     if (area !== 'sync') return;
     if (changes.analysisCategory) {
       currentCategory = changes.analysisCategory.newValue;
+    }
+    if (changes.electionCycle) {
+      currentCycle = resolveElectionCycle(changes.electionCycle.newValue);
     }
     if (changes.displayMode) {
       displayMode = changes.displayMode.newValue;
@@ -868,21 +899,25 @@
   // API + cache
   // ---------------------------------------------------------------------------
   async function fetchAnalysis(term, signal) {
-    const cacheKey = term + '\x00' + currentCategory;
+    const isFinancial = currentCategory === 'Financial Contributions';
+    // Read once so the URLs and the cache key can't disagree if it changes mid-flight
+    const cycle = currentCycle;
+    const cacheKey = term + '\x00' + currentCategory + (isFinancial ? '\x00' + cycle : '');
     const cached = cacheGet(cacheKey);
     if (cached !== undefined) return cached;
     try {
       let data;
-      if (currentCategory === 'Financial Contributions') {
+      if (isFinancial) {
         // Two parallel fetches — no shared single-fetch preamble needed
         const safeJson = url =>
           fetch(url, { signal })
             .then(r => r.ok ? r.json() : null)
             .catch(e => { if (e.name === 'AbortError') throw e; return null; });
 
+        // Both get the same cycle so the text and the percentages describe the same year
         const [pcJson, qtJson] = await Promise.all([
-          safeJson(`${BASE_API}/getFinancialContributionsPercentContributionsOnly/${encodeURIComponent(term)}`),
-          safeJson(`${BASE_API}/getFinancialContributionsQuickTextOnly/${encodeURIComponent(term)}`),
+          safeJson(`${BASE_API}/getFinancialContributionsPercentContributionsOnly/${encodeURIComponent(term)}?cycleYear=${cycle}`),
+          safeJson(`${BASE_API}/getFinancialContributionsQuickTextOnly/${encodeURIComponent(term)}?cycleYear=${cycle}`),
         ]);
 
         const pc = pcJson?.percent_contributions || pcJson?.response?.percent_contributions || {};
@@ -898,6 +933,11 @@
           pct_democrats:   pc.percent_to_democrats || 0,
           pct_republicans: pc.percent_to_republicans || 0,
           quickText:       quickText,
+          // Percentages can exist for a year with no write-up yet — a note, not an error
+          noWriteUp:       qtJson?.text_available === false,
+          // The cycle the API actually answered for. Not cycle_year: quick-text
+          // only sets that when text exists, and percentages never does.
+          cycle:           Number(pcJson?.cycle ?? qtJson?.cycle ?? cycle),
           id:              pcId ?? qtId,  // percent-contributions id wins; falls back to quick-text id
           // Absence is an answer, not an error — see committee_status in the API docs
           committeeStatus:   pcJson?.committee_status || null,
@@ -912,7 +952,12 @@
 
         // Only worth generating when percentages actually came back — no
         // committee means there is no full answer to create in the first place.
-        if (!data.id && data.total > 0) prewarmFullAnswer(term, data);
+        // Past cycles are left to the site: browsing them would otherwise fire an
+        // LLM call for every company without a write-up for that year, and the
+        // site generates one on click anyway when the link carries no id.
+        if (!data.id && data.total > 0 && cycle === DEFAULT_ELECTION_CYCLE) {
+          prewarmFullAnswer(term, cycle, data);
+        }
       } else {
         const endpoint = ENDPOINT_MAP[currentCategory] || 'getPoliticalLeaning';
         const res = await fetch(
@@ -956,8 +1001,8 @@
       let fallback;
       if (currentCategory === 'Leadership Demographics') {
         fallback = { type: 'leadership_demographics', groups: [], basis: '', is_estimate: true, company_page_url: null, id: null };
-      } else if (currentCategory === 'Financial Contributions') {
-        fallback = { type: 'financial_contributions', total: 0, to_democrats: 0, to_republicans: 0, pct_democrats: 0, pct_republicans: 0, id: null, committeeStatus: null, error: true };
+      } else if (isFinancial) {
+        fallback = { type: 'financial_contributions', total: 0, to_democrats: 0, to_republicans: 0, pct_democrats: 0, pct_republicans: 0, id: null, committeeStatus: null, cycle, error: true };
       } else {
         fallback = { lean: 'Unknown', score: 'N/A', description: 'Analysis unavailable for this term.', withFinancial: false, id: null };
       }
@@ -1011,12 +1056,21 @@
     // Built at click time, not render time: a background generation may fill in
     // data.id after this card is already on screen, and reading it lazily means
     // the link picks that up with no DOM patching.
+    // The id already pins one cycle; cycle is spelled out anyway so the site
+    // labels the page correctly when there is no id to look up.
     const openSite = () => {
-      const suffix = data.id ? `?id=${encodeURIComponent(data.id)}` : '';
-      window.open(`${SITE_BASE}/organization/financial_contributions/${encodeURIComponent(term)}${suffix}`, '_blank');
+      const params = new URLSearchParams();
+      if (data.id) params.set('id', data.id);
+      params.set('cycle', String(data.cycle));
+      window.open(`${SITE_BASE}/organization/financial_contributions/${encodeURIComponent(term)}?${params}`, '_blank');
     };
 
-    const title = `<div class="chp-overview-title">Financial Contributions for <strong>${escHtml(term)}</strong></div>`;
+    const cycleChips = ELECTION_CYCLES.map(year =>
+      `<button class="chp-cycle-chip${year === data.cycle ? ' active' : ''}" data-cycle="${year}">${year}</button>`
+    ).join('');
+    // Shown in every state, absence included — a company with no PAC this cycle may have had one last cycle
+    const title = `<div class="chp-overview-title">Financial Contributions for <strong>${escHtml(term)}</strong></div>`
+      + `<div class="chp-cycle-row"><span>Election cycle:</span>${cycleChips}</div>`;
 
     const openBtnSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1035,6 +1089,19 @@
     const linkFooter = data.id ? footer : '';
 
     const finish = () => {
+      // Reloads this panel in place rather than going through showPopup, so a
+      // dragged overlay stays where the user put it.
+      content.querySelectorAll('.chp-cycle-chip').forEach(chip => {
+        chip.addEventListener('click', e => {
+          e.preventDefault();
+          const year = Number(chip.dataset.cycle);
+          if (year === data.cycle) return;
+          currentCycle = year;
+          safeSet({ electionCycle: year });
+          if (currentController) { currentController.abort(); currentController = null; }
+          loadIntoPanel(term, popup);
+        });
+      });
       const openBtn = content.querySelector('.chp-open-btn');
       if (openBtn) openBtn.addEventListener('click', e => { e.preventDefault(); openSite(); });
       const siteLink = content.querySelector('.chp-contrib-site-link');
@@ -1112,7 +1179,8 @@
         </div>
       </div>
       ${data.quickText ? `<div class="chp-contrib-preview">${escHtml(data.quickText)}</div>` : ''}
-      <div class="chp-contrib-note">This financial information is based on Federal Election Commission filings from the 2024 election cycle.</div>
+      ${data.noWriteUp ? `<div class="chp-contrib-note">No written summary exists for the ${escHtml(data.cycle)} cycle yet.</div>` : ''}
+      <div class="chp-contrib-note">This financial information is based on Federal Election Commission filings from the ${escHtml(data.cycle)} election cycle.</div>
       <div class="chp-contrib-note">Full financial contributions analysis available on the <a href="#" class="chp-citation-link chp-contrib-site-link">${APP_NAME} website ↗</a></div>
       ${footer}
     `;

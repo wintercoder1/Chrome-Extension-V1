@@ -380,7 +380,8 @@ class AmazonBrandTracker {
 
     
     // Read category before creating loading element so the label is correct
-    const { analysisCategory: initialCategory } = await chrome.storage.sync.get(['analysisCategory']);
+    const { analysisCategory: initialCategory, electionCycle } =
+      await chrome.storage.sync.get(['analysisCategory', 'electionCycle']);
     const loadingCategory = initialCategory || 'Financial Contributions';
 
     // First we create the component. It will initially be in its loading state.
@@ -438,7 +439,8 @@ class AmazonBrandTracker {
         try {
             const category = loadingCategory;
             console.log(`Analysis fetch initiated [${category}]:`, companyName);
-            const politicalData = await this.networkManager.fetchAnalysis(companyName, category);
+            const politicalData = await this.networkManager.fetchAnalysis(
+                companyName, category, resolveElectionCycle(electionCycle));
             console.log('Network call complete!!!');
             
             // 🎯 CRITICAL: Increment request counter ONLY on successful API response
@@ -538,7 +540,10 @@ class AmazonBrandTracker {
     );
 
     try {
-      const data = await this.networkManager.fetchAnalysis(this.companyName, category);
+      // Read fresh: the popup sends this same message when only the cycle changed
+      const { electionCycle } = await chrome.storage.sync.get(['electionCycle']);
+      const data = await this.networkManager.fetchAnalysis(
+        this.companyName, category, resolveElectionCycle(electionCycle));
       this.displayElementManager.updateDisplayElementCipher(
         { manufacturer: this.companyName, brand: this.brandName },
         null,

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Corporate Cipher - Decode the Corporate World",
-  "version": "2.0",
+  "name": "Corporate Cipher - Decode Corporate Finance and Influence",
+  "version": "2.0.1",
   "description": "Info about financial contributions of companies and more, backed with public data.",
   
   "permissions": [

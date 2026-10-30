@@ -8,9 +8,13 @@ const CIPHER_DEMO_COLORS = [
 
 const cipherFormatDollars = n => '$' + Math.round(n).toLocaleString('en-US');
 
-const cipherOpenSite = (slug, topic, id) => {
-  const suffix = id ? `?id=${encodeURIComponent(id)}` : '';
-  window.open(`${CIPHER_SITE_BASE}/organization/${slug}/${encodeURIComponent(topic)}${suffix}`, '_blank');
+// cycle is Financial Contributions only; the site defaults to 2026 without it.
+const cipherOpenSite = (slug, topic, id, cycle) => {
+  const params = new URLSearchParams();
+  if (id) params.set('id', id);
+  if (cycle) params.set('cycle', String(cycle));
+  const query = params.toString();
+  window.open(`${CIPHER_SITE_BASE}/organization/${slug}/${encodeURIComponent(topic)}${query ? `?${query}` : ''}`, '_blank');
 };
 
 const cipherOpenLinkButton = (onClick, title) =>
@@ -59,7 +63,7 @@ const CipherFinancialContributions = ({ data, topic }) => {
     React.createElement('h2', null, topic)
   );
   const openBtn = cipherOpenLinkButton(
-    e => { e.preventDefault(); cipherOpenSite('financial_contributions', topic, data.id); },
+    e => { e.preventDefault(); cipherOpenSite('financial_contributions', topic, data.id, data.cycle); },
     `Open on ${APP_NAME}`
   );
   // Only offer the deep link when an answer exists to open.
@@ -139,7 +143,8 @@ const CipherFinancialContributions = ({ data, topic }) => {
     ),
     data.quickText
       ? React.createElement('p', { className: 'contrib-preview' }, data.quickText) : null,
-    note('This financial information is based on Federal Election Commission filings from the 2024 election cycle.'),
+    data.noWriteUp ? note(`No written summary exists for the ${data.cycle} cycle yet.`) : null,
+    note(`This financial information is based on Federal Election Commission filings from the ${data.cycle} election cycle.`),
     openBtn
   );
 };
